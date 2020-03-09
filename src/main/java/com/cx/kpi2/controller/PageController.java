@@ -19,4 +19,9 @@ public class PageController {
     public String tohome(){
         return "publicPage/index";
     }
+
+    @GetMapping("/regard")
+    public String toRegard(){
+        return  "publicPage/Regard";
+    }
 }

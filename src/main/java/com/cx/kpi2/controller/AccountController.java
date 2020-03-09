@@ -27,6 +27,7 @@ public class AccountController {
      */
     @PostMapping("/forelogin")
     public Object login(@RequestBody Account user , HttpSession session){
+        System.out.println("---执行到此处---");
         String account = user.getAccount();
         account = HtmlUtils.htmlEscape(account);
 

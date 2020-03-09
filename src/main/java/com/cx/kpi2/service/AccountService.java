@@ -14,4 +14,8 @@ public class AccountService {
         return accountDAO.getUserByAccountAndPassword(account , password);
     }
 
+    public  Account getUserByAccount(String account){
+        return accountDAO.getByAccount(account);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.cx.kpi2.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Otherkpi")
@@ -26,6 +27,8 @@ public class Otherkpi {
     String yearMonth;
     @Column(name = "test_level")
     String testLevel;
+    @Column(name = "weight")
+    BigDecimal weight;
 
     public int getId() {
         return id;
@@ -89,5 +92,13 @@ public class Otherkpi {
 
     public void setTestLevel(String testLevel) {
         this.testLevel = testLevel;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
     }
 }

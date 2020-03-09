@@ -12,19 +12,78 @@
     <link href="css/fore/style.css" rel="stylesheet">
 </head>
 <body>
+
+<script>
+
+
+
+    $(function(){
+        var data4Vue = {
+            uri:'forelogin',
+            result: [],
+            user:{account:'', password:''}
+        };
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted:function(){
+                // alert("此vue加载成功");
+            },
+            methods: {
+                login:function(){
+                    var url =  this.uri;
+                    if(0==this.user.account.length){
+                        $("span.errorMessage").html("请输入用户名");
+                        $("div.loginErrorMessageDiv").css("visibility","visible");
+                        return;
+                    }
+                    if(0==this.user.password.length){
+                        $("span.errorMessage").html("请输入密码");
+                        $("div.loginErrorMessageDiv").css("visibility","visible");
+                        return;
+                    }
+
+                    axios.post(url,this.user).then(function(response) {
+                        var result = response.data;
+                        if(result.code==0){
+                            location.href="index";
+                        }
+                        else{
+                            $("span.errorMessage").html(result.message);
+                            $("div.loginErrorMessageDiv").css("visibility","visible");
+                        }
+                    });
+                }
+            }
+        });
+
+        var left = window.innerWidth/2+162;
+        $("div.loginSmallDiv").css("left",left);
+    })
+</script>
+<div id="workingArea">
 <table>
     <tr>
         <td><h2>登陆表单</h2></td>
     </tr>
     <tr>
-        <td>账号：<input type="text" style="width:500px;height:80px;"></td>
+        <td>账号：<input v-model="user.account" placeholder="手机/会员名/邮箱" type="text"></td>
     </tr>
     <tr>
-        <td>密码：<input type="password" style="width:500px;height:80px;"></td>
+        <td>密码：<input v-model="user.password" type="password" placeholder="密码"></td>
     </tr>
     <tr>
-        <td><input type="button" value="登陆"></td>
+        <td><button class="btn btn-block blueButton" type="button" @click="login">登录</button></td>
     </tr>
 </table>
+
+<div class="loginErrorMessageDiv">
+    <div class="alert alert-danger" >
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+        <span class="errorMessage">22</span>
+    </div>
+</div>
+</div>
 </body>
 </html>
