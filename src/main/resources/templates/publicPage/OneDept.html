@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>事业部下具体某部门KPI考核得分</title>
+</head>
+<body style="background-color: #77cbd8">
+<style>
+    span{
+        color: #CC0000;
+    }
+</style>
+<script>
+    $(function(){
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[2];
+        var times = str.split("=");
+        var newTime = times[1];
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        //显示时间，上级传来的时间作为默认选中的时间
+        $.ajax({
+            type:"post",
+            url:"allBussinessGetTime",
+            async:false,
+            success:function (data) {
+                $("#recordTime").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    if(data[i] == newTime){
+                        $("#recordTime").append("<option selected>"+data[i]+"</option>");
+                    }else{
+                        $("#recordTime").append("<option>"+data[i]+"</option>");
+                    }
+                }
+            }
+        })
+
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var deptList = strArr[1];
+        var depts = deptList.split("=");
+        var dept = depts[1];
+        dept = decodeURI(dept);
+
+        if(dept === "集团人事"){
+            getHrKpi();
+        }else {
+            firstLevel(dept);
+        }
+        loadScore();
+    })
+
+    //对其它部门进行KPI考核  首先获取一级分类
+    function firstLevel(dept){
+        $.ajax({
+            type:"post",
+            data:{"dept":dept},
+            url:"otherFirstLevel2",
+            async:false,
+            success:function(data){
+                $("#content").html("");
+                // var firstLevel = JSON.parse(data);
+                for(var i = 0 ; i < data.length ; i ++){
+                    $("#content").append(
+                        "<h2>"+data[i].testType+"</h2>"+"<br>"
+                    );
+                    getSecondLevel(data[i].id);
+
+                }
+                // $("#content").append('<button class="btn btn-primary" onclick="getRecord()" style="margin-left: 45%;">'+"提交"+"</button>");
+                // var a = $("#content").children("div").length;
+                // alert(a);
+            }
+        })
+    }
+    //对其它部门进行考核，获取二级分类
+    function getSecondLevel(first) {
+        var data = {"first":first};
+        var url = "getSecondLevel";
+        $.ajax({
+            type:"post",
+            data:data,
+            url:url,
+            async:false,
+            success:function(data){
+                for (var i = 0 ; i < data.length ; i++){
+                    var no = i+1;
+                    $("#content").append(
+                        "<h3>"+no+"、"+data[i].content+"</h3>"
+                    );
+                    getDetail(data[i].id , first)
+                }
+            }
+        })
+    }
+
+
+    //对其它部门进行考核，获取考核内容明细
+    function getDetail(second , first){
+        var data={"first":first ,"second":second};
+        var url="getKpiDetail";
+        $.ajax({
+            type:"post",
+            data:data,
+            url:url,
+            async:false,
+            success:function (data) {
+                for(var i = 0 ; i < data.length ; i++){
+                    var no = i+1;
+                    // $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"(分值："+data[i].scoreMax+"分；权重："+data[i].weight*100+"%"+")"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+'<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;">'+"</div>");
+                    if(data[i].testLevel == "S"){
+                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"<span>"+"(重要事项：若发生值为0，未发生值为1)"+"</span>"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;" readonly>'+"</div>");
+                    }else{
+                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"(分值："+data[i].scoreMax+"分；权重："+parseInt(data[i].weight*100)+"%"+")"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;" readonly>'+"</div>");
+
+                    }
+                }
+            }
+        })
+    }
+    //考核进行打分，提交至后台
+    function getRecord() {
+        var arr=[];
+        var arr2=[];
+        $("#content input[type=hidden]").each(function () {
+            console.log(this.value);
+            arr.push(this.value);
+        });
+        $("#content input[type=text]").each(function () {
+            console.log(this.value);
+            arr2.push(this.value);
+        })
+        if(arr.length != arr2.length){
+            alert("数据获取错误，请联系管理员");
+            return
+        }
+        var bussiness = document.getElementById("bussiness").value;
+        var data = {"kpiNo": arr, "score": arr2, "bussiness": bussiness};
+        var url = "writeRecord";
+        $.ajax({
+            type: "post",
+            data: data,
+            url: url,
+            async: false,
+            success: function (data) {
+                alert(data);
+            },
+            error:function(){
+                alert("执行失败");
+            }
+        })
+
+
+    }
+    //HR部门的KPI考核无需进行分类，直接从一个表中获取
+    function getHrKpi(){
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[2];
+        var times = str.split("=");
+        var newTime = times[1];
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        var data={"bussiness":bussiness};
+        var url = "hrKpiModel";
+        $.ajax({
+            type:"post",
+            data:data,
+            url:url,
+            async:false,
+            success:function(data){
+                $("#content").html("");
+                if(data.length != 0){
+                    for(var i = 0 ; i < data.length ; i++){
+                        var no = i+1;
+
+                        if(data[i].testLevel == "S"){
+                            $("#content").append('<div style="font-size: 18px;">'
+                                +"<h3>"+no+"、"+data[i].testContent+"</h3>"
+                                +data[i].testDetail+"<span>"+"(该项为重要事项，若发生值为0，若未发生值为1）"+"</span>"
+                                +'<input type="hidden" value="'+data[i].id+'">'
+                                +'评分：<input type="text" style="width:80px;height:30px;font-size: 18px;"readonly>'
+                                +"</div>");
+                        }else{
+                            $("#content").append('<div style="font-size: 18px;">'
+                                +"<h3>"+no+"、"+data[i].testContent+"</h3>"
+                                +data[i].testDetail+"(分值："+data[i].scoreMax+",权重："+parseInt(data[i].weight*100)+"%)"
+                                +'<input type="hidden" value="'+data[i].id+'">'
+                                +'评分：<input type="text" style="width:80px;height:30px;font-size: 18px;" readonly>'
+                                +"</div>");
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function loadScore(){
+        var arr=[];
+        $("#content input[type=hidden]").each(function () {
+            console.log(this.value);
+            arr.push(this.value);
+        });
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        //获取事业部
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        //获取部门
+        var deptList = strArr[1];
+        var depts = deptList.split("=");
+        var dept = depts[1];
+        dept = decodeURI(dept);
+        //获取时间
+        var str = strArr[2];
+        var times = str.split("=");
+        var newTime = times[1];
+
+
+        $.ajax({
+            type:"post",
+            data:{"kpiNo":arr , "bussiness":bussiness , "dept":dept , "yearMonth":newTime},
+            url:"getKpiScorePro",
+            async:false,
+            success:function(data){
+                var i = 0;
+                $("#content input[type=text]").each(function () {
+                    var score = data[i];
+                    $(this).attr("value",score);
+                    i++
+                });
+            }
+        })
+    }
+
+</script>
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;"></select>
+</div>
+<div id="content" style="margin-left: 10%;">
+
+</div>
+
+</body>
+</html>

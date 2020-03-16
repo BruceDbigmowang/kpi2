@@ -1,7 +1,10 @@
 package com.cx.kpi2.controller;
 
+import com.cx.kpi2.dao.PeopleDAO;
 import com.cx.kpi2.pojo.Account;
+import com.cx.kpi2.pojo.People;
 import com.cx.kpi2.service.AccountService;
+import com.cx.kpi2.util.MD5;
 import com.cx.kpi2.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,8 @@ import javax.servlet.http.HttpSession;
 public class AccountController {
     @Autowired
     AccountService accountService;
+    @Autowired
+    PeopleDAO peopleDAO;
 
     /**
      * 登陆功能：
@@ -26,18 +31,25 @@ public class AccountController {
      * @return
      */
     @PostMapping("/forelogin")
-    public Object login(@RequestBody Account user , HttpSession session){
-        System.out.println("---执行到此处---");
+    public Object login(@RequestBody People user , HttpSession session){
+
         String account = user.getAccount();
         account = HtmlUtils.htmlEscape(account);
-
-        Account man = accountService.login(account , user.getPassword());
-        if(null == user){
-            String message = "登陆异常，请联系管理员";
+        People man = peopleDAO.findByAccount(account);
+        if(man == null){
+            String message = "此账号无法登录该系统";
             return Result.fail(message);
         }else{
-            session.setAttribute("user", man);
-            return Result.success();
+            String password = MD5.getMd5(user.getPassword());
+            System.out.println(password);
+            System.out.println(man.getPassword());
+            if(!password.equals(man.getPassword())){
+                String message = "密码错误";
+                return Result.fail(message);
+            }else{
+                session.setAttribute("user", man);
+                return Result.success();
+            }
         }
     }
 

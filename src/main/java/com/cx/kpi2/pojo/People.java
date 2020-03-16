@@ -5,27 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Account")
+@Table(name = "Account_VIEW")
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-public class Account {
+public class People {
     @Id
+    @Column(name = "account")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="account")
     String account;
 
     @Column(name = "password")
     String password;
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Column(name = "dept")
-    String dept;
 
     public String getAccount() {
         return account;
@@ -35,11 +24,11 @@ public class Account {
         this.account = account;
     }
 
-    public String getDept() {
-        return dept;
+    public String getPassword() {
+        return password;
     }
 
-    public void setDept(String dept) {
-        this.dept = dept;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

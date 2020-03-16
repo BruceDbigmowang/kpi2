@@ -15,7 +15,7 @@ public class CategoryContent {
     int id;
 
     @Column(name = "test_category")
-    String category;
+    int category;
     @Column(name = "test_content")
     String content;
 
@@ -27,11 +27,11 @@ public class CategoryContent {
         this.id = id;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category = category;
     }
 

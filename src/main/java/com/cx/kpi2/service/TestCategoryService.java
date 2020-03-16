@@ -13,12 +13,11 @@ public class TestCategoryService {
     @Autowired
     TestCategoryDAO testCategoryDAO;
 
-    public List<String> getAllByDept(String dept){
+    public List<TestCategory> getAllByDept(String dept){
         List<TestCategory> categories = testCategoryDAO.findByDept(dept);
-        List<String> testCategories = new ArrayList<>();
-        for (int i = 0 ; i < categories.size() ; i++ ){
-            testCategories.add(categories.get(i).getTestType());
-        }
-        return testCategories;
+        return categories;
+    }
+    public TestCategory getById(int first){
+        return testCategoryDAO.getOne(first);
     }
 }

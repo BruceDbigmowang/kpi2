@@ -13,12 +13,16 @@ public class CategoryContentService {
     @Autowired
     CategoryContentDAO categoryContentDAO;
 
-    public List<String> getByCategory(String category){
+    public List<CategoryContent> getByCategory(int category){
         List<CategoryContent> categoryContentList = categoryContentDAO.findByCategory(category);
-        List<String> categoryContents = new ArrayList<>();
-        for(int i = 0 ; i < categoryContentList.size() ; i++){
-            categoryContents.add(categoryContentList.get(i).getContent());
-        }
-        return categoryContents;
+//        List<String> categoryContents = new ArrayList<>();
+//        for(int i = 0 ; i < categoryContentList.size() ; i++){
+//            categoryContents.add(categoryContentList.get(i).getContent());
+//        }
+        return categoryContentList;
+    }
+
+    public CategoryContent getById(int id){
+        return categoryContentDAO.getOne(id);
     }
 }

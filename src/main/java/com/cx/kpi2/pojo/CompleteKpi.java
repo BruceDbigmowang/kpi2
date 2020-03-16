@@ -5,23 +5,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Record")
-@JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-public class Record {
+@Table(name = "CompleteKpi")
+@JsonIgnoreProperties({"handler" , "hibernateLazyInitializer"})
+public class CompleteKpi {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+
     @Column(name = "bussiness")
     String bussiness;
     @Column(name = "dept")
     String dept;
-    @Column(name = "score")
-    int score;
     @Column(name = "year_month")
-    String yearmonth;
-    @Column(name = "KpiNo")
-    int kpiNo;
+    String yearMonth;
 
     public int getId() {
         return id;
@@ -47,27 +45,11 @@ public class Record {
         this.dept = dept;
     }
 
-    public int getScore() {
-        return score;
+    public String getYearMonth() {
+        return yearMonth;
     }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public String getYearmonth() {
-        return yearmonth;
-    }
-
-    public void setYearmonth(String yearmonth) {
-        this.yearmonth = yearmonth;
-    }
-
-    public int getKpiNo() {
-        return kpiNo;
-    }
-
-    public void setKpiNo(int kpiNo) {
-        this.kpiNo = kpiNo;
+    public void setYearMonth(String yearMonth) {
+        this.yearMonth = yearMonth;
     }
 }

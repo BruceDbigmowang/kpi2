@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>每月所有事业部所有KPI统计</title>
+</head>
+<body style="background-color: #77cbd8;width:1300px;">
+<script>
+    $(function(){
+        //获取当前的年份月份
+        //以便于设置当前年份月份为默认值
+        var myDate = new Date();
+        var tYear = myDate.getFullYear();
+        var tMonth = myDate.getMonth();
+        var m = tMonth + 1;
+        var yearMonth = tYear +'_'+ m;
+
+        $.ajax({
+            type:"post",
+            url:"allBussinessGetTime",
+            async:false,
+            success:function (data) {
+                $("#recordTime").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    if(data[i] == yearMonth){
+                        $("#recordTime").append("<option selected>"+data[i]+"</option>");
+                    }else{
+                        $("#recordTime").append("<option>"+data[i]+"</option>");
+                    }
+                }
+            }
+        })
+        loadAllInfo();
+    })
+
+    function loadAllInfo(){
+        // alert("重新执行了一遍");
+        var data4Vue = {
+            uri:'getAllBussiness',
+            // firstLevels:[],
+            bussinesses:[],
+            depts:[]
+        }
+        var vue = new Vue({
+            el:'#allInfo',
+            data:data4Vue,
+            mounted:function(){
+                // this.getBussiness();
+                this.getDept();
+            },
+            methods:{
+                // getBussiness:function(){
+                //     var url = this.uri;
+                //     axios.post(url).then(function (response) {
+                //         vue.bussinesses = response.data;
+                //     })
+                // },
+                getDept:function(){
+                    var url = "getAllDept";
+                    axios.post(url).then(function (response) {
+                        vue.depts = response.data;
+                    })
+                }
+            }
+        })
+
+        $.ajax({
+            type:"post",
+            url:"getAllBussiness",
+            async:false,
+            success:function(data){
+                $("#allBussiness").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#allBussiness").append("<tr>"+"<td style=\"width: 100px;font-size: 18px\">"+data[i].bussiness+"</td>"+"</tr>");
+                }
+            }
+        })
+
+        var yearMonth = document.getElementById("recordTime").value;
+        $.ajax({
+            type:"post",
+            data:{"yearMonth":yearMonth},
+            url:"getDataByTime",
+            async:false,
+            success:function(data){
+                $("#BussinessAndDeptScore").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    var bussiness = data[i];
+                    var program = "";
+                    for(var j = 0 ; j < bussiness.length ; j++){
+                        program = program+'<td style="width: 100px;font-size: 18px;">'+bussiness[j]+"</td>";
+                    }
+                    $("#BussinessAndDeptScore").append("<tr>"+program+"</tr>");
+                }
+            }
+
+        })
+
+        $.ajax({
+            type:"post",
+            data:{"yearMonth":yearMonth},
+            url:"getAllTotalByTime",
+            async:false,
+            success:function(data){
+                $("#bussinessTotal").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#bussinessTotal").append("<tr>"+'<td style="width:100px;font-size: 18px;">'+data[i]+"</td>"+"</tr>");
+                }
+            }
+
+        })
+
+        $.ajax({
+            type:"post",
+            data:{"yearMonth":yearMonth},
+            url:"getTopBussiness",
+            async:false,
+            success:function(data){
+                $("#gooBussiness").html("");
+                $("#goodBussiness").append("<tr>"+'<td style="width: 1200px;font-size: 18px">'+'<img src="image/perfect.png">'+"明星事业部："+data+"</td>"+"</tr>");
+            }
+        })
+
+    }
+
+    function TabClick(){
+        var td = event.srcElement;
+        rowNo = td.parentElement.rowIndex-1;
+        var bussiness = document.getElementById("allBussiness").rows[rowNo].cells[0].innerHTML;
+        var yearMonth = document.getElementById("recordTime").value;
+        if(1 == 1){
+            window.location.href="foreOneBussiness?bussiness="+bussiness+"&&yearMonth="+yearMonth;
+        }else{
+            alert("登录的账号无权限查取事业部考核明细")
+        }
+    }
+</script>
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllInfo()"></select>
+</div>
+
+<div id="allInfo" style="display: block;position: relative;margin-left:5%;margin-top:3%;">
+    <div style="display: block;position: absolute;float: left">
+        <table  border="1px" style="background-color: #CCCCDD" onclick="TabClick()">
+            <thead>
+                    <td style="width: 100px;font-size: 18px">事业部</td>
+            </thead>
+            <tbody id="allBussiness"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 100px;">
+        <table id="allDept" border="1px" style="background-color: #CCCCDD">
+            <tr>
+                <td style="width: 100px;font-size: 18px;" v-for="dept in depts">集团{{dept}}</td>
+            </tr>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 100px;margin-top: 26px">
+        <table id="BussinessAndDeptScore" border="1px" style="background-color: #CCCCDD"></table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 1100px;">
+        <table border="1px" style="background-color: #CCCCDD">
+            <thead>
+                <tr>
+                    <td style="width: 100px;font-size: 18px;">合计</td>
+                </tr>
+            </thead>
+            <tbody id="bussinessTotal"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position:absolute;float:left;margin-top: 415px">
+        <table id="goodBussiness" border="1px" style="background-color: #CCCCDD"></table>
+    </div>
+</div>
+</body>
+</html>

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
     <script src="js/jquery/2.0.0/jquery.min.js"></script>
     <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
     <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
@@ -12,13 +11,55 @@
     <link href="css/fore/style.css" rel="stylesheet">
     <title>主页</title>
 </head>
-<body>
-<h3>主页</h3>
-<h5>对kpi进行查看 打分</h5>
-<div style="margin-left: 30%;margin-top: 30%;">
-    <button type="button" class="btn btn-lg" style="width:400px;height:150px;" ><h1><a href="regard">各事业部KPI结果查询</a></h1></button><br><br><br>
-    <button type="button" class="btn btn-lg" style="width:400px;height:150px;"><h1>各事业部KPI考核打分</h1></button><br><br><br>
-    <button type="button" class="btn btn-lg" style="width:400px;height:150px;"><h1>各事业部KPI权重调整</h1></button>
+<body style="background-color: #77cbd8">
+<!--<h3>主页</h3>-->
+<!--<h5>对kpi进行查看 打分</h5>-->
+<!--
+权限设定：
+1、考核打分
+首先判断是否已经完成考核打分
+接着判断该时间是否在允许打分的时间内
+    首先判断某一部门的考核人对否所有事业部已经完成考核
+    若有事业部未完成，则进入到评分页面，选择事业部时进行提示，并禁用提交按钮
+    若所有事业部都完成，则无法进入评分页面
+然后判断身份
+根据以上结果返回一个值
+从而判断是否是进入到下一个页面还是提示错误信息
+
+2、查看考核分数
+由于考核总表所有人均可见
+所以只要可以登陆系统，则均可进入到下一个页面
+接下来查看事业部或部门的权限下面再判断
+
+3、权重调整
+只有特定身份的人方可进入
+否则提示错误信息，不予跳转页面
+-->
+<!--该功能后续完成-->
+<script>
+    function canRegard(){
+        $.ajax({
+            type:"post",
+            url:"sureIdentity",
+            async:false,
+            success:function (data) {
+                if(data == false){
+                    alert("所使用的的账号无权限对各事业部就行KPI考核");
+                }else{
+                    window.location.href="regard";
+                }
+            }
+        })
+    }
+
+    function toAllBussiness(){
+        window.location.href="foreAllBussiness";
+    }
+</script>
+<div style="margin-left: 35%;margin-top: 10%;">
+    <button id="regard" type="button" class="btn btn-lg" style="width:300px;height:80px;" onclick="canRegard()"><h3>各事业部KPI考核打分</h3></button><br><br><br>
+    <button type="button" class="btn btn-lg" style="width:300px;height:80px;"  onclick="toAllBussiness()"><h3>各事业部KPI结果查询</h3></button><br><br><br>
+<!--    <button type="button" class="btn btn-lg" style="width:300px;height:80px;"><h3>各事业部KPI权重调整</h3></button>-->
 </div>
 </body>
 </html>

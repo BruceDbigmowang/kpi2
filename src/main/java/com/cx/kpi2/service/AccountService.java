@@ -10,9 +10,6 @@ public class AccountService {
     @Autowired
     AccountDAO accountDAO;
 
-    public Account login(String account , String password){
-        return accountDAO.getUserByAccountAndPassword(account , password);
-    }
 
     public  Account getUserByAccount(String account){
         return accountDAO.getByAccount(account);

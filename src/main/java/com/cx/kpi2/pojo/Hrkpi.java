@@ -23,8 +23,6 @@ public class Hrkpi {
     BigDecimal weight;
     @Column(name = "score_max")
     int scoreMax;
-    @Column(name = "score")
-    int score;
     @Column(name = "test_level")
     String testLevel;
 
@@ -74,14 +72,6 @@ public class Hrkpi {
 
     public void setScoreMax(int scoreMax) {
         this.scoreMax = scoreMax;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     public String getTestLevel() {

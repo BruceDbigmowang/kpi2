@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>事业部下所有部门KPI分数</title>
+</head>
+<body style="background-color: #77cbd8">
+<script>
+    $(function(){
+        // 按照上个页面传过来的时间进行查询
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[1];
+        var times = str.split("=");
+        var newTime = times[1];
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        // alert(bussiness);
+        // 显示上级所选中的事业部
+        $("#bussiness").html("");
+        $("#bussiness").append('<td style="width:150px;height:360px;font-size: 18px;">'+bussiness+"</td>");
+        //显示时间，上级传来的时间作为默认选中的时间
+        $.ajax({
+            type:"post",
+            url:"allBussinessGetTime",
+            async:false,
+            success:function (data) {
+                $("#recordTime").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    if(data[i] == newTime){
+                        $("#recordTime").append("<option selected>"+data[i]+"</option>");
+                    }else{
+                        $("#recordTime").append("<option>"+data[i]+"</option>");
+                    }
+                }
+            }
+        })
+        loadAllInfo();
+    })
+
+    function loadAllInfo(){
+        // 按照上个页面传过来的时间进行查询
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[1];
+        var times = str.split("=");
+        var newTime = times[1];
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        // alert(bussiness);
+        // 显示上级所选中的事业部
+        $("#bussiness").html("");
+        $("#bussiness").append('<td style="width:150px;height:360px;font-size: 18px;">'+bussiness+"</td>");
+        //显示时间，上级传来的时间作为默认选中的时间
+        // $.ajax({
+        //     type:"post",
+        //     url:"allBussinessGetTime",
+        //     async:false,
+        //     success:function (data) {
+        //         $("#recordTime").html("");
+        //         for(var i = 0 ; i < data.length ; i++){
+        //             if(data[i] == newTime){
+        //                 $("#recordTime").append("<option selected>"+data[i]+"</option>");
+        //             }else{
+        //                 $("#recordTime").append("<option>"+data[i]+"</option>");
+        //             }
+        //         }
+        //     }
+        // })
+        //显示所有部门
+        $.ajax({
+            type:"post",
+            url:"getAllDept",
+            async:false,
+            success:function(data){
+                $("#allDept").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#allDept").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+"集团"+data[i]+"</td>");
+                }
+            }
+        })
+        //显示该事业部所有考核部门的权重及考核评分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness , "yearMonth":newTime},
+            url:"getOneBussinessKpiScore",
+            async:false,
+            success:function(data){
+                $("#deptScore").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#deptScore").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].weight*100+"%"+"</td>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].score+"</td>"+"</tr>");
+                }
+            }
+        })
+        //显示该事业部所有考核的最终得分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness,"yearMonth":newTime},
+            url:"getOneBussinessScore",
+            async:false,
+            success:function(data){
+                $("#totalScore").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#totalScore").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].score+"</td>"+"</tr>")
+                }
+            }
+        })
+        //统计所有最终考核的总得分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness,"yearMonth":newTime},
+            url:"getOneBussinessAllDeptScore",
+            async:false,
+            success:function(data){
+                $("#total").html("");
+                $("#total").append("<tr>"+'<td style="width:300px;height:30px;font-size: 18px;">'+"合计"+"</td>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data+"</td>")
+            }
+        })
+
+
+    }
+
+    function chooseRecordTime(){
+
+        // 按照上个页面传过来的时间进行查询
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[1];
+        var newTime = document.getElementById("recordTime").value;
+        alert(newTime);
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        // alert(bussiness);
+        // 显示上级所选中的事业部
+        $("#bussiness").html("");
+        $("#bussiness").append('<td style="width:150px;height:360px;font-size: 18px;">'+bussiness+"</td>");
+        //显示时间，上级传来的时间作为默认选中的时间
+        // $.ajax({
+        //     type:"post",
+        //     url:"allBussinessGetTime",
+        //     async:false,
+        //     success:function (data) {
+        //         $("#recordTime").html("");
+        //         for(var i = 0 ; i < data.length ; i++){
+        //             if(data[i] == newTime){
+        //                 $("#recordTime").append("<option selected>"+data[i]+"</option>");
+        //             }else{
+        //                 $("#recordTime").append("<option>"+data[i]+"</option>");
+        //             }
+        //         }
+        //     }
+        // })
+        //显示所有部门
+        $.ajax({
+            type:"post",
+            url:"getAllDept",
+            async:false,
+            success:function(data){
+                $("#allDept").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#allDept").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+"集团"+data[i]+"</td>");
+                }
+            }
+        })
+        //显示该事业部所有考核部门的权重及考核评分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness , "yearMonth":newTime},
+            url:"getOneBussinessKpiScore",
+            async:false,
+            success:function(data){
+                $("#deptScore").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#deptScore").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].weight*100+"%"+"</td>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].score+"</td>"+"</tr>");
+                }
+            }
+        })
+        //显示该事业部所有考核的最终得分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness,"yearMonth":newTime},
+            url:"getOneBussinessScore",
+            async:false,
+            success:function(data){
+                $("#totalScore").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#totalScore").append("<tr>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data[i].score+"</td>"+"</tr>")
+                }
+            }
+        })
+        //统计所有最终考核的总得分
+        $.ajax({
+            type:"post",
+            data:{"bussiness":bussiness,"yearMonth":newTime},
+            url:"getOneBussinessAllDeptScore",
+            async:false,
+            success:function(data){
+                $("#total").html("");
+                $("#total").append("<tr>"+'<td style="width:300px;height:30px;font-size: 18px;">'+"合计"+"</td>"+'<td style="width:100px;height:30px;font-size: 18px;">'+data+"</td>")
+            }
+        })
+    }
+
+    function TabClick(){
+        var td = event.srcElement;
+        rowNo = td.parentElement.rowIndex-1;
+        var dept = document.getElementById("allDept").rows[rowNo].cells[0].innerHTML;
+        var yearMonth = document.getElementById("recordTime").value;
+
+        var test = window.location.search;
+         var strArr = test.split("&&");
+         var bussinessList = strArr[0];
+         var bussinesses = bussinessList.split("=");
+         var bussiness = bussinesses[1];
+         bussiness = decodeURI(bussiness);
+
+         $.ajax({
+             type:"post",
+             data:{"bussiness":bussiness , "dept":dept , "yearMonth":yearMonth},
+             url:"regardOrNot",
+             async:false,
+             success:function(data){
+                 if(data == true){
+                     window.location.href="foreOneDept?bussiness="+bussiness+"&&dept="+dept+"&&yearMonth="+yearMonth;
+                 }else{
+                     alert(dept+"该月未对"+bussiness+"进行KPI考核打分");
+                 }
+             }
+         })
+
+    }
+
+</script>
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="chooseRecordTime()"></select>
+</div>
+<div style="display: block;position: relative;margin-left:25%;margin-top:7%;">
+    <div style="display: block;position: absolute;float: left">
+        <table border="1px" style="background-color: #CCCCDD">
+            <tr id="bussiness">
+            </tr>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 150px;">
+        <table border="1px" style="background-color: #CCCCDD" onclick="TabClick()">
+            <thead>
+                <tr>
+                    <td style="width: 100px;height:30px;font-size: 18px;">考核部门</td>
+                </tr>
+            </thead>
+            <tbody id="allDept"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 250px;">
+        <table border="1px" style="background-color: #CCCCDD">
+            <thead>
+                <tr>
+                    <td style="width:100px;height:30px;font-size: 18px;">权重</td>
+                    <td style="width:100px;height:30px;font-size: 18px;">考核得分</td>
+                </tr>
+            </thead>
+            <tbody id="deptScore"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 450px;">
+        <table border="1px" style="background-color: #CCCCDD">
+            <thead>
+                <tr>
+                    <td style="width: 100px;height: 30px;font-size: 18px;">得分</td>
+                </tr>
+            </thead>
+            <tbody id="totalScore"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 150px;margin-top: 330px;">
+        <table id="total" border="1px" style="background-color: #CCCCDD"></table>
+    </div>
+</div>
+</body>
+</html>

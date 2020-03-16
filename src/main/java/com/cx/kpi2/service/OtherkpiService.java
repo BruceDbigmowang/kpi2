@@ -11,7 +11,13 @@ import java.util.List;
 public class OtherkpiService {
     @Autowired
     OtherkpiDAO otherkpiDAO;
-    public List<Otherkpi> getKpiByContent(String content){
-        return otherkpiDAO.findByTestContent(content);
+
+    public List<Otherkpi> getKpiByContent(int type , int content){
+        return otherkpiDAO.findByTestTypeAndTestContent(type , content);
     }
+
+    public Otherkpi getById(int id){
+        return otherkpiDAO.getOne(id);
+    }
+
 }

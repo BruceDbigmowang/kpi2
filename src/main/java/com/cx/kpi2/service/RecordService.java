@@ -22,4 +22,19 @@ public class RecordService {
     public Record getRecordByBussinessAndDept(String bussiness , String dept , String yearmonth){
         return recordDAO.getByBussinessAndDeptAndYearmonth(bussiness, dept , yearmonth);
     }
+    public void writeRecord(Record record){
+        recordDAO.save(record);
+    }
+
+    public Record getScore(String bussiness , String dept , int kpiNo , String yearMonth){
+        List<Record> recordList = recordDAO.getByBussinessAndDeptAndKpiNoAndYearmonth(bussiness,dept,kpiNo,yearMonth);
+        if(recordList.size() == 0){
+            Record record = new Record();
+            record.setScore(0);
+            return record;
+        }else{
+            Record record = recordList.get(0);
+            return record;
+        }
+    }
 }

@@ -18,4 +18,13 @@ public class BussinessService {
         return bussinessList;
     }
 
+    public Bussiness getByBussiness(String bussiness){
+        List<Bussiness> bussinessList = bussinessDAO.getByBussiness(bussiness);
+        if(bussinessList.size() == 0){
+            return null;
+        }else{
+            return bussinessList.get(0);
+        }
+    }
+
 }

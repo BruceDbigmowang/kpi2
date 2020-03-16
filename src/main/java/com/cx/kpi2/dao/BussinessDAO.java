@@ -7,4 +7,5 @@ import javax.validation.constraints.Max;
 import java.util.List;
 
 public interface BussinessDAO extends JpaRepository<Bussiness , Integer> {
+    List<Bussiness> getByBussiness(String bussiness);
 }

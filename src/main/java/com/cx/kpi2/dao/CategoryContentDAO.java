@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CategoryContentDAO extends JpaRepository<CategoryContent, Integer> {
-    List<CategoryContent> findByCategory(String category);
+    List<CategoryContent> findByCategory(int category);
 }

@@ -14,17 +14,13 @@ public class Otherkpi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     @Column(name = "test_type")
-    String testType;
+    int testType;
     @Column(name = "test_content")
-    String testContent;
+    int testContent;
     @Column(name = "test_detail")
     String testDetail;
     @Column(name = "score_max")
     int scoreMax;
-    @Column(name = "score")
-    int score;
-    @Column(name = "year_month")
-    String yearMonth;
     @Column(name = "test_level")
     String testLevel;
     @Column(name = "weight")
@@ -38,19 +34,19 @@ public class Otherkpi {
         this.id = id;
     }
 
-    public String getTestType() {
+    public int getTestType() {
         return testType;
     }
 
-    public void setTestType(String testType) {
+    public void setTestType(int testType) {
         this.testType = testType;
     }
 
-    public String getTestContent() {
+    public int getTestContent() {
         return testContent;
     }
 
-    public void setTestContent(String testContent) {
+    public void setTestContent(int testContent) {
         this.testContent = testContent;
     }
 
@@ -68,22 +64,6 @@ public class Otherkpi {
 
     public void setScoreMax(int scoreMax) {
         this.scoreMax = scoreMax;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public String getYearMonth() {
-        return yearMonth;
-    }
-
-    public void setYearMonth(String yearMonth) {
-        this.yearMonth = yearMonth;
     }
 
     public String getTestLevel() {
