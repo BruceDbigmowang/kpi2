@@ -19,7 +19,7 @@ public class RecordService {
         return recordDAO.getByBussinessAndYearmonth(bussiness,yearmonth);
     }
 
-    public Record getRecordByBussinessAndDept(String bussiness , String dept , String yearmonth){
+    public List<Record> getRecordByBussinessAndDept(String bussiness , String dept , String yearmonth){
         return recordDAO.getByBussinessAndDeptAndYearmonth(bussiness, dept , yearmonth);
     }
     public void writeRecord(Record record){

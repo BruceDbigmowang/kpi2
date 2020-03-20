@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>所有事业部年度报表</title>
+</head>
+<body style="background-color: #77cbd8">
+<script>
+$(function (){
+    var myDate = new Date();
+    var tYear = myDate.getFullYear();
+    $.ajax({
+        type:"post",
+        url:"allBussinessGetTime",
+        async:false,
+        success:function (data) {
+            $("#recordTime").html("");
+            for(var i = 0 ; i < data.length ; i++){
+                var year = data[i].split("_")[0];
+                if(tYear == year){
+                    $("#recordTime").append("<option selected>"+year+"</option>");
+                }else{
+                    $("#recordTime").append("<option>"+year+"</option>");
+                }
+            }
+        }
+    })
+})
+    function loadAllBussiness() {
+        $.ajax({
+            type:"post",
+            url:"getAllBussiness",
+            async:false,
+            success:function(data){
+
+            }
+        })
+    }
+</script>
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange=""></select>
+</div>
+<div style="position: relative;display: block;">
+    <div  style="float: left;display:block;position: absolute;" >
+        <table border="1px;" style="background-color: #CCCCDD">
+            <tr>
+                <td style="width: 150px;height:30px;font-size: 18px">时间</td>
+                <td style="width: 50px;height:30px;font-size: 18px">1月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">2月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">3月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">4月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">5月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">6月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">7月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">8月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">9月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">10月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">11月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">12月</td>
+                <td style="width: 50px;height:30px;font-size: 18px">平均</td>
+            </tr>
+        </table>
+    </div>
+    <div style="float: left;margin-top: 30px;display:block;position: absolute;">
+        <table id="bussinessList">
+
+        </table>
+    </div>
+    <div style="float: left;margin-top: 30px;margin-left: 100px;display:block;position: absolute;">
+        <table id="deptList">
+
+        </table>
+    </div>
+    <div style="float: left;display:block;position: absolute;"></div>
+    <div style="float: left"></div>
+</div>
+</body>
+</html>

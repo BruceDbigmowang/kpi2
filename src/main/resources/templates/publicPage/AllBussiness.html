@@ -141,11 +141,16 @@
             alert("登录的账号无权限查取事业部考核明细")
         }
     }
+    function toAnnualStatement() {
+        window.location.href="foreAnnualStatement";
+    }
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
     选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllInfo()"></select>
 </div>
-
+<div>
+    <button class="btn btn-primary" onclick="toAnnualStatement()">查看年度报表</button>
+</div>
 <div id="allInfo" style="display: block;position: relative;margin-left:5%;margin-top:3%;">
     <div style="display: block;position: absolute;float: left">
         <table  border="1px" style="background-color: #CCCCDD" onclick="TabClick()">

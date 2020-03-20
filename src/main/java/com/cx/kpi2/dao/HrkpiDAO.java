@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HrkpiDAO extends JpaRepository<Hrkpi , Integer> {
     List<Hrkpi> getByBussiness(String bussiness);
+    List<Hrkpi> findById(int id);
 }

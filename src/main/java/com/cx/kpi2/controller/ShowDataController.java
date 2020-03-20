@@ -5,10 +5,7 @@ import com.cx.kpi2.dao.HrkpiDAO;
 import com.cx.kpi2.dao.OtherkpiDAO;
 import com.cx.kpi2.dao.RecordDAO;
 import com.cx.kpi2.pojo.*;
-import com.cx.kpi2.service.CompletKpiService;
-import com.cx.kpi2.service.DeptScoreService;
-import com.cx.kpi2.service.DeptTotalScoreService;
-import com.cx.kpi2.service.RecordService;
+import com.cx.kpi2.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +35,8 @@ public class ShowDataController {
     HrkpiDAO hrkpiDAO;
     @Autowired
     AccountDAO accountDAO;
+    @Autowired
+    DetailService detailService;
 
     @RequestMapping("/allBussinessGetTime")
     public List<String> getAllTime(){
@@ -169,6 +168,13 @@ public class ShowDataController {
         System.out.println(dept);
         System.out.println(yearMonth);
         return  completKpiService.submitedRegard(bussiness , dept , yearMonth);
+    }
+    /**
+     * 使用表格的形式展现某事业部下各个考核部门的打分明细
+     */
+    @RequestMapping("/getAllDetail")
+    public List<Detail> getallDetail(@RequestParam("bussiness")String bussiness , @RequestParam("yearMonth")String yearMonth){
+        return detailService.getAllDetail(bussiness , yearMonth);
     }
 
 }

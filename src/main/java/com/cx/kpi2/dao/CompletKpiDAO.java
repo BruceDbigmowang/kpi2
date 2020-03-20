@@ -12,4 +12,5 @@ public interface CompletKpiDAO extends JpaRepository<CompleteKpi , Integer> {
     List<CompleteKpi> findByDeptAndYearMonth(String dept , String yearMonth);
 
     List<CompleteKpi> findByBussinessAndDeptAndYearMonth(String bussiness , String dept , String yearMonth);
+
 }

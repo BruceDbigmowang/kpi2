@@ -243,6 +243,18 @@
 
     }
 
+    function toAllDetail(){
+        var test = window.location.search;
+        var strArr = test.split("&&");
+        var str = strArr[1];
+        var newTime = document.getElementById("recordTime").value;
+        var bussinessList = strArr[0];
+        var bussinesses = bussinessList.split("=");
+        var bussiness = bussinesses[1];
+        bussiness = decodeURI(bussiness);
+        window.location.href="foreAllDetail?bussiness="+bussiness+"&&yearMonth="+newTime;
+    }
+
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
     选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="chooseRecordTime()"></select>
@@ -288,6 +300,9 @@
     <div style="display: block;position: absolute;float: left;margin-left: 150px;margin-top: 330px;">
         <table id="total" border="1px" style="background-color: #CCCCDD"></table>
     </div>
+    <br>
+    <button class="btn btn-primary" style="margin-top: 30%;margin-left: 55%" onclick="toAllDetail()">查看所有考核明细</button>
 </div>
+
 </body>
 </html>

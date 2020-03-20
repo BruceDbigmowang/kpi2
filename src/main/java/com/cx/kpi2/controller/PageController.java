@@ -72,4 +72,13 @@ public class PageController {
         return "publicPage/OneDept";
     }
 
+    @GetMapping("/foreAllDetail")
+    public String toAllDetail(){
+        return "publicPage/AllDetail";
+    }
+    @GetMapping("/foreAnnualStatement")
+    public String toAnnualStatment(){
+        return "publicPage/AnnualStatement";
+    }
+
 }
