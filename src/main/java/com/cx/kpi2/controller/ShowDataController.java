@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -37,6 +38,12 @@ public class ShowDataController {
     AccountDAO accountDAO;
     @Autowired
     DetailService detailService;
+    @Autowired
+    BussinessService bussinessService;
+    @Autowired
+    DeptService deptService;
+    @Autowired
+    WeightService weightService;
 
     @RequestMapping("/allBussinessGetTime")
     public List<String> getAllTime(){
@@ -175,6 +182,80 @@ public class ShowDataController {
     @RequestMapping("/getAllDetail")
     public List<Detail> getallDetail(@RequestParam("bussiness")String bussiness , @RequestParam("yearMonth")String yearMonth){
         return detailService.getAllDetail(bussiness , yearMonth);
+    }
+
+    /**
+     * 根据事业部，部门，时间来搜索对应的数据
+     * 先遍历事业部
+     * 接着遍历部门
+     * 再遍历时间
+     * 算平均分的时候，如果每遇到一个未打分的月份，均分分母（12 - 1）
+     * 将某事业部下某部门一年的分数及均分放入到一个list中
+     * 放入所有数据的List中
+     * 再将一年的分数及平均数*权重放入到另一个list中
+     * 下一个部门重复将数据放入到list中并放入所有数据的list中
+     * 在上一个权重得分的list中逐个加上新的部门分数*权重
+     * 部门遍历结束后，将总分list放入到总数据的list中
+     * 事业部遍历结束后，所有数据存放完成
+     * @param year
+     * @return
+     */
+    @RequestMapping("/showAnnualData")
+    public List<List<BigDecimal>> getAllData(@RequestParam("year")String year){
+        List<List<BigDecimal>> allData = new ArrayList<>();
+        List<Bussiness> bussinessList = bussinessService.getAllBussiness();
+        for(int i = 0 ; i < bussinessList.size() ; i++){
+            String bussinessName = bussinessList.get(i).getBussiness();
+            List<BigDecimal> total = new ArrayList<>();//存放总分的list
+            for(int no = 0 ; no < 13 ; no++){
+                total.add(new BigDecimal(0));
+            }//事业部改变后，部门总得分初始化，都是0
+
+            List<String> deptList = deptService.getAllDept();
+            for(int j = 0 ; j < deptList.size() ; j++){
+                String deptName = deptList.get(j);
+
+                List<BigDecimal> deptAllData = new ArrayList<>();
+                BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                int fenmu = 0;
+                BigDecimal deptTotal = new BigDecimal(0);
+
+                for(int month = 1 ; month < 13 ; month++){
+                    /**
+                     * 首先判断该月是否进行KPI考核
+                     * 若未进行KPI考核分母不变，deptTotal不变,deptAllData添加0
+                     * 若进行了KPI考核，deptTotal+查询到的分数，deptAllData添加查询到的分数
+                     */
+                    String yearMonth = year+"_"+month;
+                    boolean has = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                    System.out.println(bussinessName+"_"+deptName+"_"+yearMonth);
+                    if(has == false){
+                        deptAllData.add(new BigDecimal(0));
+                    }else{
+                        BigDecimal score = deptScoreService.getAMonth(bussinessName , deptName , yearMonth).get(0).getScore();
+                        deptAllData.add(score);
+                        deptTotal = deptTotal.add(score);
+                        fenmu += 1;
+                    }
+
+                }
+                if(fenmu == 0){
+                    deptAllData.add(new BigDecimal(0));
+                }else{
+                    deptAllData.add(deptTotal.divide(new BigDecimal(fenmu), 4, RoundingMode.HALF_UP));
+                }
+
+                //至此 某事业部所有部门年度KPI分数及平均数获取完成
+                allData.add(deptAllData);
+
+            }
+            /**
+             * 总分未完成
+             */
+
+            allData.add(total);//部门循环结束后，即一个事业部的总分得到，放入总数据里，接下来进行下一个事业部的年度分数读取存放
+        }
+        return allData;
     }
 
 }

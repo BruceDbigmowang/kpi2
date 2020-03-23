@@ -30,8 +30,12 @@ $(function (){
                     $("#recordTime").append("<option>"+year+"</option>");
                 }
             }
+
         }
+
     })
+    loadAllBussiness();
+    showAnnualData();
 })
     function loadAllBussiness() {
         $.ajax({
@@ -39,7 +43,60 @@ $(function (){
             url:"getAllBussiness",
             async:false,
             success:function(data){
+                $("#bussinessList").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#bussinessList").append(
+                        "<tr>"+'<td style="width: 100px;height:330px;font-size: 18px;">'+data[i].bussiness+"</td>"+"</tr>"
+                    );
 
+                }
+                var no = data.length;
+                loadAllDept(no);
+            }
+        })
+    }
+    function loadAllDept(no) {
+        $.ajax({
+            type:"post",
+            url:"getAllDept",
+            async:false,
+            success:function(data){
+                $("#deptList").html("");
+                for(var i = 0 ; i < no ; i++){
+                    for(var j = 0 ; j < data.length ; j++){
+                        $("#deptList").append(
+                            "<tr>"+'<td style="width: 100px;height:30px;font-size: 18px;">'+"集团"+data[j]+"</td>"+"</tr>"
+                        );
+                    }
+                    $("#deptList").append(
+                        "<tr>"+'<td style="width: 100px;height:30px;font-size: 18px;">'+"总分"+"</td>"+"</tr>"
+                    );
+                }
+            }
+        })
+    }
+    function showAnnualData() {
+        var year = document.getElementById("recordTime").value;
+        $.ajax({
+            type:"post",
+            data:{"year":year},
+            url:"showAnnualData",
+            async:false,
+            success:function(data){
+                for(var i = 0 ; i < data.length ; i++){
+                    var deptData = data[i];
+                    var show = "";
+                    for(var j = 0 ; j < deptData.length ; j++){
+                        if(j == 0){
+                            show = show+"<tr>"+'<td style="width:50px;height:30px;font-size: 18px;">'+deptData[j]+"</td>";
+                        }else if(j == deptData.length-1 ){
+                            show = show+'<td style="width:50px;height:30px;font-size: 18px;">'+deptData[j]+"</td>"+"</tr>";
+                        }else{
+                            show = show+'<td style="width:50px;height:30px;font-size: 18px;">'+deptData[j]+"</td>";
+                        }
+                    }
+                    $("#allData").append(show);
+                }
             }
         })
     }
@@ -47,11 +104,11 @@ $(function (){
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
     选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange=""></select>
 </div>
-<div style="position: relative;display: block;">
+<div style="position: relative;display: block;margin-left: 5%;">
     <div  style="float: left;display:block;position: absolute;" >
         <table border="1px;" style="background-color: #CCCCDD">
             <tr>
-                <td style="width: 150px;height:30px;font-size: 18px">时间</td>
+                <td style="width: 200px;height:30px;font-size: 18px">时间</td>
                 <td style="width: 50px;height:30px;font-size: 18px">1月</td>
                 <td style="width: 50px;height:30px;font-size: 18px">2月</td>
                 <td style="width: 50px;height:30px;font-size: 18px">3月</td>
@@ -69,17 +126,18 @@ $(function (){
         </table>
     </div>
     <div style="float: left;margin-top: 30px;display:block;position: absolute;">
-        <table id="bussinessList">
+        <table id="bussinessList" border="1px;" style="background-color: #CCCCDD">
 
         </table>
     </div>
     <div style="float: left;margin-top: 30px;margin-left: 100px;display:block;position: absolute;">
-        <table id="deptList">
+        <table id="deptList" border="1px;" style="background-color: #CCCCDD">
 
         </table>
     </div>
-    <div style="float: left;display:block;position: absolute;"></div>
-    <div style="float: left"></div>
+    <div style="float: left;display:block;position: absolute;margin-left: 200px;margin-top: 30px;">
+        <table id="allData" border="1px;" style="background-color: #CCCCDD"></table>
+    </div>
 </div>
 </body>
 </html>
