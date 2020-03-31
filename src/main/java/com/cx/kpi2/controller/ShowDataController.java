@@ -202,60 +202,337 @@ public class ShowDataController {
      */
     @RequestMapping("/showAnnualData")
     public List<List<BigDecimal>> getAllData(@RequestParam("year")String year){
-        List<List<BigDecimal>> allData = new ArrayList<>();
+        List<List<BigDecimal>> list1 = new ArrayList<>();//用于存放所有事业部所有部门的一年的评分加总分
         List<Bussiness> bussinessList = bussinessService.getAllBussiness();
         for(int i = 0 ; i < bussinessList.size() ; i++){
             String bussinessName = bussinessList.get(i).getBussiness();
-            List<BigDecimal> total = new ArrayList<>();//存放总分的list
-            for(int no = 0 ; no < 13 ; no++){
-                total.add(new BigDecimal(0));
-            }//事业部改变后，部门总得分初始化，都是0
 
+            List<List<BigDecimal>> list2 = new ArrayList<>();//用于存放某事业部所有部门的一年的评分
             List<String> deptList = deptService.getAllDept();
+            List<BigDecimal> list4 = new ArrayList<>();
             for(int j = 0 ; j < deptList.size() ; j++){
                 String deptName = deptList.get(j);
+                List<BigDecimal> list3 = new ArrayList<>();//用于记录某事业部某部分一年的得分
 
-                List<BigDecimal> deptAllData = new ArrayList<>();
-                BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
-                int fenmu = 0;
-                BigDecimal deptTotal = new BigDecimal(0);
-
-                for(int month = 1 ; month < 13 ; month++){
-                    /**
-                     * 首先判断该月是否进行KPI考核
-                     * 若未进行KPI考核分母不变，deptTotal不变,deptAllData添加0
-                     * 若进行了KPI考核，deptTotal+查询到的分数，deptAllData添加查询到的分数
-                     */
-                    String yearMonth = year+"_"+month;
-                    boolean has = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
-                    System.out.println(bussinessName+"_"+deptName+"_"+yearMonth);
-                    if(has == false){
-                        deptAllData.add(new BigDecimal(0));
+                for(int s = 1 ; s < 13 ; s++){
+                    String yearMonth = year+"_"+s;
+                    //首先判断某事业部某部门在某年某月是否有评分
+                    boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                    if(regard == false){
+                        list3.add(new BigDecimal(0));
                     }else{
                         BigDecimal score = deptScoreService.getAMonth(bussinessName , deptName , yearMonth).get(0).getScore();
-                        deptAllData.add(score);
-                        deptTotal = deptTotal.add(score);
-                        fenmu += 1;
+                        list3.add(score);
                     }
-
                 }
-                if(fenmu == 0){
-                    deptAllData.add(new BigDecimal(0));
-                }else{
-                    deptAllData.add(deptTotal.divide(new BigDecimal(fenmu), 4, RoundingMode.HALF_UP));
-                }
-
-                //至此 某事业部所有部门年度KPI分数及平均数获取完成
-                allData.add(deptAllData);
+                list2.add(list3);
 
             }
             /**
-             * 总分未完成
+             * 将某事业部所有部门的所有得分传入到总得分中
              */
+            for(int w = 0 ; w < list2.size() ; w++){
+                List<BigDecimal> list = list2.get(w);
+                list1.add(list);
+            }
 
-            allData.add(total);//部门循环结束后，即一个事业部的总分得到，放入总数据里，接下来进行下一个事业部的年度分数读取存放
+            //1月
+            BigDecimal one = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+1;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(0).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(0).multiply(weight);
+                        one = one.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            one = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(one);
+            //2月
+            BigDecimal two = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+2;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+
+//                    BigDecimal newScore = list2.get(a).get(1).multiply(weight);
+//                    two = two.add(newScore);
+
+                    if(list2.get(a).get(1).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(1).multiply(weight);
+                        two = two.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            two = new BigDecimal(0);
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+            list4.add(two);
+
+            //3月
+            BigDecimal three = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+3;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(2).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(2).multiply(weight);
+                        three = three.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            three = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(three);
+
+            //4月
+            BigDecimal four = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+4;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(3).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(3).multiply(weight);
+                        four = four.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            four = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(four);
+
+            //5月
+            BigDecimal five = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+5;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(4).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(4).multiply(weight);
+                        five = five.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            five = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(five);
+
+            //6月
+            BigDecimal six = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+6;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(5).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(5).multiply(weight);
+                        six = six.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            six = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(six);
+
+            //7月
+            BigDecimal seven = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+7;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(6).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(6).multiply(weight);
+                        seven = seven.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            seven = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(seven);
+
+            //8月
+            BigDecimal eight = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+8;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(7).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(7).multiply(weight);
+                        eight = eight.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            eight = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(eight);
+
+            //9月
+            BigDecimal nine = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+9;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(8).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(8).multiply(weight);
+                        nine = nine.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            nine = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(nine);
+
+            //10月
+            BigDecimal ten = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+10;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(9).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(9).multiply(weight);
+                        ten = ten.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            ten = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(ten);
+
+            //11月
+            BigDecimal eleven = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+11;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(10).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(10).multiply(weight);
+                        eleven = eleven.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            eleven = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(eleven);
+
+            //12月
+            BigDecimal twelve = new BigDecimal(0);
+            for(int a = 0 ; a < list2.size() ; a++){
+
+                String deptName = deptList.get(a);
+                String yearMonth = year+"_"+12;
+                boolean regard = completKpiService.submitedRegard(bussinessName , deptName , yearMonth);
+                if( regard == true){
+                    BigDecimal weight = weightService.getByBussinessAndDept(bussinessName , deptName).getWeight();
+                    if(list2.get(a).get(11).compareTo(BigDecimal.ZERO) != 0){
+                        BigDecimal newScore = list2.get(a).get(11).multiply(weight);
+                        twelve = twelve.add(newScore);
+                    }else{
+                        boolean happendInport = deptScoreService.happendImport(bussinessName , deptName , yearMonth);
+                        if(happendInport == true){
+                            twelve = new BigDecimal(0);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            list4.add(twelve);
+
+            list1.add(list4);
+
         }
-        return allData;
+
+        return list1;
     }
 
 }

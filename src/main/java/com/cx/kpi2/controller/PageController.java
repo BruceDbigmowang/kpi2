@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 
@@ -79,6 +78,22 @@ public class PageController {
     @GetMapping("/foreAnnualStatement")
     public String toAnnualStatment(){
         return "publicPage/AnnualStatement";
+    }
+    @GetMapping("/foreGroupRegard")
+    public String toGroupRegard(){
+        return "publicPage/GroupRegard";
+    }
+    @GetMapping("/foreGroupResult")
+    public String toAllResult(){
+        return "publicPage/AllDeptResult";
+    }
+    @GetMapping("/forOneDeptResult")
+    public String toOneDeptResult(){
+        return "publicPage/OneDeptResult";
+    }
+    @GetMapping("/foreAllDeptAnnualResult")
+    public String toAnnualResult(){
+        return "publicPage/AllDeptAnnualResult";
     }
 
 }

@@ -40,7 +40,7 @@
     function canRegard(){
         $.ajax({
             type:"post",
-            url:"sureIdentity",
+            url:"getIdentity",
             async:false,
             success:function (data) {
                 if(data == false){
@@ -55,10 +55,60 @@
     function toAllBussiness(){
         window.location.href="foreAllBussiness";
     }
+
+    function identity(){
+        $.ajax({
+            type:"post",
+            url:"getGroupRegarIdentity",
+            async:false,
+            success:function(data){
+                if(data == false){
+                    alert("无权限进行集团部门KPI考核打分");
+                }else{
+                    toGroupRegard();
+                }
+            }
+        })
+    }
+
+
+    function toGroupRegard() {
+        var myDate = new Date();
+        var tYear = myDate.getFullYear();
+        var tMonth = myDate.getMonth();
+        var yearMonth="";
+        if(tMonth == 0){
+            var year = tYear-1;
+            yearMonth = year+"_"+12;
+        }else{
+            yearMonth = tYear+"_"+tMonth;
+        }
+        var data = {"yearMonth":yearMonth};
+        var url="completGroupTest";
+        $.ajax({
+            type:"post",
+            data:data,
+            url:url,
+            async:false,
+            success:function (data) {
+                if(data == true){
+                    alert("您已完成该月集团各部门的KPI考核打分");
+                }else{
+                    window.location.href="foreGroupRegard";
+                }
+            }
+        })
+
+    }
+    function toAllDeptResult(){
+        window.location.href="foreGroupResult";
+    }
 </script>
 <div style="margin-left: 35%;margin-top: 10%;">
     <button id="regard" type="button" class="btn btn-lg" style="width:300px;height:80px;" onclick="canRegard()"><h3>各事业部KPI考核打分</h3></button><br><br><br>
     <button type="button" class="btn btn-lg" style="width:300px;height:80px;"  onclick="toAllBussiness()"><h3>各事业部KPI结果查询</h3></button><br><br><br>
+    <button type="button" class="btn btn-lg" style="width:300px;height:80px;"  onclick="identity()"><h3>集团KPI考核打分</h3></button><br><br><br>
+    <button type="button" class="btn btn-lg" style="width:300px;height:80px;"  onclick="toAllDeptResult()"><h3>集团KPI考核查询</h3></button><br><br><br>
 <!--    <button type="button" class="btn btn-lg" style="width:300px;height:80px;"><h3>各事业部KPI权重调整</h3></button>-->
 </div>
 </body>

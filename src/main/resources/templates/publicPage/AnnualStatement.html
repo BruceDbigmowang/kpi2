@@ -36,6 +36,8 @@ $(function (){
     })
     loadAllBussiness();
     showAnnualData();
+    getAnnualTotal();
+    getAnnualRank();
 })
     function loadAllBussiness() {
         $.ajax({
@@ -100,11 +102,71 @@ $(function (){
             }
         })
     }
+    function getAnnualTotal() {
+
+        // var tb=document.getElementById("totalScore");    //获取table对像
+        // var rows = tb.rows;
+        // var arr = [];
+        // for (var i = 0; i < rows.length; i++) {    //--循环所有的行
+        //     var cells = rows[i].cells;
+        //     var total = 0;　// cells 集合返回表格中所有 <td> 或 <th> 元素。
+        //     for (var j = 0; j < cells.length; j++) {   //--循环所有的列，从第一列取数据，因为一般第一列都是标识，数据毫无意义。
+        //         var sonValue = cells[j].innerText;
+        //         total += parseFloat(sonValue);
+        //     }
+        //     arr.push(total);
+        // }
+
+        var tab = document.getElementById("allData");
+        var rows = tab.rows;
+        var arr =[];
+        for(var i=10 ;  i < rows.length ; i=i+11){
+            var cells = rows[i].cells;
+            var total = 0;
+            for(var j = 0 ; j < cells.length ; j++){
+                var sonValue = cells[j].innerText;
+                total += parseFloat(sonValue);
+            }
+            arr.push(total);
+        }
+        $("#annualTotalScore").html("");
+        for(var i = 0 ; i < arr.length ; i++){
+            $("#annualTotalScore").append("<tr>"+'<td style="width:100px;height: 330px;font-size: 18px">'+arr[i]+"</td>"+"</tr>");
+        }
+    }
+
+    function getAnnualRank() {
+        var tb=document.getElementById("annualTotalScore");    //获取table对像
+        var rows = tb.rows;
+        var arr = [];
+        for (var i = 0; i < rows.length; i++) {    //--循环所有的行
+            var cells = rows[i].cells;
+            var total = 0;　// cells 集合返回表格中所有 <td> 或 <th> 元素。
+            //--循环所有的列，从第一列取数据，因为一般第一列都是标识，数据毫无意义。
+            var sonValue = cells[0].innerText;
+            total += parseFloat(sonValue);
+
+            arr.push(total);
+        }
+        $.ajax({
+            type:"post",
+            data:{"totals":arr},
+            url:"getRank",
+            async:false,
+            success:function (data) {
+                $("#annualRank").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#annualRank").append("<tr>"+'<td style="width: 100px;font-size: 18px;height: 330px;">'+data[i]+"</td>"+"</tr>");
+                }
+            }
+        })
+    }
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
     选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange=""></select>
 </div>
-<div style="position: relative;display: block;margin-left: 5%;">
+<h1 style="margin-left: 22%;">集团职能部门对各事业部的KPI考核年度报表</h1>
+<div style="position: relative;display: block;margin-left: 11%;">
     <div  style="float: left;display:block;position: absolute;" >
         <table border="1px;" style="background-color: #CCCCDD">
             <tr>
@@ -121,7 +183,6 @@ $(function (){
                 <td style="width: 50px;height:30px;font-size: 18px">10月</td>
                 <td style="width: 50px;height:30px;font-size: 18px">11月</td>
                 <td style="width: 50px;height:30px;font-size: 18px">12月</td>
-                <td style="width: 50px;height:30px;font-size: 18px">平均</td>
             </tr>
         </table>
     </div>
@@ -137,6 +198,30 @@ $(function (){
     </div>
     <div style="float: left;display:block;position: absolute;margin-left: 200px;margin-top: 30px;">
         <table id="allData" border="1px;" style="background-color: #CCCCDD"></table>
+    </div>
+    <div style="position: absolute; float: left;margin-left: 800px;">
+        <table border="1px;" style="background-color: #CCCCDD">
+            <thead>
+                <tr>
+                    <td style="width: 100px;height:30px;font-size: 18px">年度总得分</td>
+                </tr>
+            </thead>
+            <tbody id="annualTotalScore">
+
+            </tbody>
+        </table>
+    </div>
+    <div style="position: absolute; float: left;margin-left: 900px;">
+        <table border="1px;" style="background-color: #CCCCDD">
+            <thead>
+            <tr>
+                <td style="width: 100px;height:30px;font-size: 18px">年度总排名</td>
+            </tr>
+            </thead>
+            <tbody id="annualRank">
+
+            </tbody>
+        </table>
     </div>
 </div>
 </body>

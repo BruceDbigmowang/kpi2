@@ -11,4 +11,5 @@ public interface RecordDAO extends JpaRepository<Record , Integer> {
     List<Record> getByBussinessAndDeptAndYearmonth(String bussiness , String dept , String yearmonth);
     List<Record> getByBussinessAndDeptAndKpiNoAndYearmonth(String bussiness , String dept , int kpiNo , String yearMonth);
     List<Record> getByBussinessAndScoreAndYearmonth(String bussiness , int score , String yearMonth);
+    List<Record> getByBussinessAndDeptAndYearmonthAndScore(String bussiness , String dept , String yearMonth , int score);
 }

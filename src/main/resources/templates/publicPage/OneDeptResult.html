@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>集团各部门KPI考核明细</title>
+</head>
+<body style="background-color: #77cbd8">
+
+<script>
+$(function(){
+    getAllRecordTime();
+    getDetail();
+    getGroupKPI();
+
+})
+
+function getDetail(){
+    var test = window.location.search;
+    var strArr = test.split("&&");
+    var str = strArr[1];
+    var times = str.split("=");
+
+    var newTime = $('#recordTime option:selected').text();
+    // alert(newTime);
+    var deptList = strArr[0];
+    var depts = deptList.split("=");
+    var dept = depts[1];
+    dept = decodeURI(dept);
+    dept = dept.slice(2);
+    var data = {"dept":dept , "yearMonth":newTime};
+    var url="getGroupTestDetail";
+    $.ajax({
+        type:"post",
+        data:data,
+        url:url,
+        async:false,
+        success:function(data){
+            $("#allDetail").html("");
+            for(var i = 0 ; i < data.length ; i++){
+                $("#allDetail").append("<tr>"+"<td style=\"width: 350px;font-size: 18px;height: 30px;\">"+data[i].scorer+"</td>"+"<td style=\"width: 100px;font-size: 18px;height: 30px;\">"+data[i].score+"</td>"+"</tr>");
+            }
+
+
+        }
+    })
+}
+
+function getGroupKPI(){
+    var test = window.location.search;
+    var strArr = test.split("&&");
+    var str = strArr[1];
+    var times = str.split("=");
+    var newTime = times[1];
+    var deptList = strArr[0];
+    var depts = deptList.split("=");
+    var dept = depts[1];
+    dept = decodeURI(dept);
+    dept = dept.slice(2);
+    var data = {"dept":dept };
+    var url="getGroupKPIByDept";
+    $.ajax({
+        type:"post",
+        data:data,
+        url:url,
+        async:false,
+        success:function(data){
+            $("#allKPI").html("");
+            var height = 0;
+            for(var i = 0 ; i < data.length ; i++){
+                var level = data[i].level;
+
+                if(level == "S"){
+                    $("#allKPI").append("<tr>"+'<td style="width:500px;height:60px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
+                    height+=60;
+                }else if(level == "A"){
+                    $("#allKPI").append("<tr>"+'<td style="width:500px;height:330px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
+                    height+=330;
+                }else if(level == "B"){
+                    $("#allKPI").append("<tr>"+'<td style="width:500px;height:450px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
+                    height+=450;
+                }
+            }
+            $("#dept").html("");
+            $("#dept").append("<tr>"+'<td style="width: 150px;font-size: 18px;height: '+height+'px;">'+"集团"+dept+"</td>"+"</tr>");
+
+
+        }
+    })
+}
+function getAllRecordTime() {
+    var myDate = new Date();
+    var tYear = myDate.getFullYear();
+    var tMonth = myDate.getMonth();
+    var yearMonth="";
+    if(tMonth == 0){
+        var year = tYear-1;
+        yearMonth = year+"_"+12;
+    }else{
+        yearMonth = tYear+"_"+tMonth;
+    }
+    $("#recordTime").html("");
+    $.ajax({
+        type:"post",
+        url:"getAllRecordYearMonth",
+        async:false,
+        success:function(data){
+            for(var i = 0 ; i < data.length ; i++){
+                if(data[i] == tYear){
+                    $("#recordTime").append('<option selected value="'+data[i]+'">'+data[i]+"</option>");
+                }else{
+                    $("#recordTime").append('<option value="'+data[i]+'">'+data[i]+"</option>");
+                }
+            }
+        }
+    })
+}
+
+function clickTab(){
+    var td = event.srcElement;
+    rowNo = td.parentElement.rowIndex-1;
+    var scorer = document.getElementById("allKPI").rows[rowNo].cells[0].innerHTML;
+    var score = document.getElementById("allKPI").rows[rowNo].cells[1].innerHTML;
+    var yearMonth = document.getElementById("recordTime").value;
+    var data = {"scorer":scorer , "score":score , "yearMonth":yearMonth};
+    var url = "checkCompleteSubmit";
+    $.ajax({
+        type:"post",
+        data:data,
+        url:url,
+        async:false,
+        success:function(data){
+            alert(data);
+        }
+    })
+}
+
+</script>
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllTotalScore()"></select>
+</div>
+
+<div style="position: relative;margin-left:9%;margin-top: 5%;">
+
+<div style="position: absolute">
+    <table id="tab1" border="1px" style="background-color: #CCCCDD">
+        <thead>
+            <tr>
+                <td style="width: 150px;font-size: 18px;height: 30px;">部门</td>
+            </tr>
+        </thead>
+        <tbody id="dept"></tbody>
+    </table>
+</div>
+<div style="position: absolute ; margin-left:150px;">
+    <table id="tab2" border="1px" style="background-color: #CCCCDD" onclick="clickTab()">
+        <thead>
+            <tr>
+                <td style="width: 500px;font-size: 18px;height: 30px;">考核明细</td>
+            </tr>
+        </thead>
+        <tbody id="allKPI" ></tbody>
+    </table>
+</div>
+<div  style="position: absolute ; margin-left:650px;">
+    <table border="1px" style="background-color: #CCCCDD">
+        <thead>
+        <tr>
+            <td style="width: 200px;font-size: 18px;height: 30px;">评分人</td><td style="width: 100px;font-size: 18px;height: 30px;">分数</td>
+        </tr>
+        </thead>
+        <tbody id="allDetail"></tbody>
+    </table>
+</div>
+
+</div>
+
+</body>
+</html>

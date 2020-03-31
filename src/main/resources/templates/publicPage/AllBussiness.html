@@ -38,6 +38,7 @@
             }
         })
         loadAllInfo();
+        getRanks();
     })
 
     function loadAllInfo(){
@@ -124,7 +125,7 @@
             async:false,
             success:function(data){
                 $("#gooBussiness").html("");
-                $("#goodBussiness").append("<tr>"+'<td style="width: 1200px;font-size: 18px">'+'<img src="image/perfect.png">'+"明星事业部："+data+"</td>"+"</tr>");
+                $("#goodBussiness").append("<tr>"+'<td style="width: 1300px;font-size: 18px">'+'<img src="image/perfect.png">'+"明星事业部："+data+"</td>"+"</tr>");
             }
         })
 
@@ -144,6 +145,32 @@
     function toAnnualStatement() {
         window.location.href="foreAnnualStatement";
     }
+    function getRanks() {
+        var tb=document.getElementById("bussinessTotal");    //获取table对像
+        var rows = tb.rows;
+        var arr = [];
+        for (var i = 0; i < rows.length; i++) {    //--循环所有的行
+            var cells = rows[i].cells;
+            var total = 0;　// cells 集合返回表格中所有 <td> 或 <th> 元素。
+            //--循环所有的列，从第一列取数据，因为一般第一列都是标识，数据毫无意义。
+            var sonValue = cells[0].innerText;
+            total += parseFloat(sonValue);
+
+            arr.push(total);
+        }
+        $.ajax({
+            type:"post",
+            data:{"totals":arr},
+            url:"getRank",
+            async:false,
+            success:function (data) {
+                $("#ranks").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#ranks").append("<tr>"+'<td style="width: 100px;font-size: 18px;">'+data[i]+"</td>"+"</tr>");
+                }
+            }
+        })
+    }
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
     选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllInfo()"></select>
@@ -151,7 +178,8 @@
 <div>
     <button class="btn btn-primary" onclick="toAnnualStatement()">查看年度报表</button>
 </div>
-<div id="allInfo" style="display: block;position: relative;margin-left:5%;margin-top:3%;">
+<h1 style="margin-left: 20%;">集团职能部门对各事业部的KPI考核月度报表</h1>
+<div id="allInfo" style="display: block;position: relative;margin-left:2%;margin-top:3%;">
     <div style="display: block;position: absolute;float: left">
         <table  border="1px" style="background-color: #CCCCDD" onclick="TabClick()">
             <thead>
@@ -178,6 +206,16 @@
                 </tr>
             </thead>
             <tbody id="bussinessTotal"></tbody>
+        </table>
+    </div>
+    <div style="display: block;position: absolute;float: left;margin-left: 1200px;">
+        <table border="1px" style="background-color: #CCCCDD">
+            <thead>
+            <tr>
+                <td style="width: 100px;font-size: 18px;">排名</td>
+            </tr>
+            </thead>
+            <tbody id="ranks"></tbody>
         </table>
     </div>
     <div style="display: block;position:absolute;float:left;margin-top: 415px">

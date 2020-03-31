@@ -1,9 +1,9 @@
 package com.cx.kpi2.service;
 
-import com.cx.kpi2.dao.DeptDAO;
-import com.cx.kpi2.dao.DeptScoreDAO;
+import com.cx.kpi2.dao.*;
 import com.cx.kpi2.pojo.Dept;
 import com.cx.kpi2.pojo.DeptScore;
+import com.cx.kpi2.pojo.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,12 @@ public class DeptScoreService {
     DeptScoreDAO deptScoreDAO;
     @Autowired
     DeptDAO deptDAO;
+    @Autowired
+    RecordDAO recordDAO;
+    @Autowired
+    HrkpiDAO hrkpiDAO;
+    @Autowired
+    OtherkpiDAO otherkpiDAO;
 
     public void saveOne(DeptScore deptScore){
         deptScoreDAO.save(deptScore);
@@ -52,5 +58,32 @@ public class DeptScoreService {
 
     List<DeptScore> getAllDetail(String bussiness , String dept, String yearMonth){
         return deptScoreDAO.getByBussinessAndDeptAndYearMonth(bussiness,dept,yearMonth);
+    }
+
+    public boolean happendImport(String bussiness , String dept , String yearMonth ){
+        if(dept.equals("行政")||dept.equals("质量")||dept.equals("审计")||dept.equals("人事")){
+            List<Record> recordList = recordDAO.getByBussinessAndDeptAndYearmonthAndScore(bussiness , dept , yearMonth , 0);
+            if(recordList == null || recordList.size() == 0){
+                return false;
+            }else{
+                for(int i = 0 ; i < recordList.size() ; i++){
+                    int kpiNo = recordList.get(i).getKpiNo();
+                    if(dept.equals("人事")){
+                        String level = hrkpiDAO.findById(kpiNo).get(0).getTestLevel();
+                        if(level.equals("S")){
+                            return true;
+                        }
+                    }else{
+                        String level = otherkpiDAO.findById(kpiNo).get(0).getTestLevel();
+                        if(level.equals("S")){
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 }

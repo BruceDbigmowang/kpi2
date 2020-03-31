@@ -9,4 +9,6 @@ public interface DeptScoreDAO extends JpaRepository<DeptScore, Integer> {
     List<DeptScore> getByBussinessAndDeptAndYearMonth(String bussiness , String dept , String yearMonth);
 
     List<DeptScore>getByBussinessAndYearMonth(String bussiness , String yearMonth);
+
+
 }
