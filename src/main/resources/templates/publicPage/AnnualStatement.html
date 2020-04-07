@@ -125,10 +125,14 @@ $(function (){
             var total = 0;
             for(var j = 0 ; j < cells.length ; j++){
                 var sonValue = cells[j].innerText;
-                total += parseFloat(sonValue);
+                var totals = Number(sonValue);
+                total = Number(total)+ Number(totals);
+                total = total.toFixed(2);
             }
+            // total = Math.floor(total * 100) / 100;
             arr.push(total);
         }
+
         $("#annualTotalScore").html("");
         for(var i = 0 ; i < arr.length ; i++){
             $("#annualTotalScore").append("<tr>"+'<td style="width:100px;height: 330px;font-size: 18px">'+arr[i]+"</td>"+"</tr>");

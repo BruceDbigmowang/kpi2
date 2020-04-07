@@ -112,10 +112,13 @@ function getAllTotalScore(){
     for (var i = 0; i < rows.length; i++) {    //--循环所有的行
         var cells = rows[i].cells;　
         var total = 0;　// cells 集合返回表格中所有 <td> 或 <th> 元素。
-        for (var j = 0; j < cells.length; j++) {   //--循环所有的列，从第一列取数据，因为一般第一列都是标识，数据毫无意义。
+        for(var j = 0 ; j < cells.length ; j++){
             var sonValue = cells[j].innerText;
-            total += parseFloat(sonValue);
+            var totals = Number(sonValue);
+            total = Number(total)+ Number(totals);
+            total = total.toFixed(2);
         }
+        // total = Math.floor(total * 100) / 100;
         arr.push(total);
     }
     $("#allTotalScore").html("");

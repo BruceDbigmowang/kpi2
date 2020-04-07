@@ -532,6 +532,14 @@ public class ShowDataController {
 
         }
 
+        for(int i = 0 ; i < list1.size() ; i++){
+            List<BigDecimal> allDept = list1.get(i);
+            for(int j = 0 ; j < allDept.size() ; j++){
+                BigDecimal sss = allDept.get(j);
+                sss.setScale(2 , BigDecimal.ROUND_HALF_UP);
+            }
+        }
+
         return list1;
     }
 
