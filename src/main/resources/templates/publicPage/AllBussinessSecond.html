@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>每月所有事业部所有KPI统计</title>
+</head>
+<body style="background-color: #77cbd8;">
+<img src="image/logo.png">
+<div style="font-size: 18px;text-align: right;">
+    选择时间:<select id="recordTime" class="form-control" style="width:200px;height:40px;font-size:18px;display: inline;" onchange="loadAllData()"></select>
+</div>
+<button class="btn btn-primary" onclick="showDataByYear()">查看年度报表</button>
+<h1 style="text-align: center;">集团职能部门对各事业部的KPI考核月度报表</h1>
+<table class="table table-striped table-bordered table-hover  table-condensed" style="margin-top: 3%;background-color: white;">
+    <thead id="dataHead"></thead>
+    <tbody id="dataBody"></tbody>
+</table>
+<script>
+    $(function () {
+        loadRecordTime();
+        loadAllData();
+    })
+
+    function loadRecordTime() {
+        $.ajax({
+            type:"get",
+            url:"loadRecordTime",
+            async:false,
+            success:function (data) {
+                $("#recordTime").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#recordTime").append('<option value="'+data[i]+'">'+data[i]+"</option>");
+                }
+                var myDate = new Date();
+                var year = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+                var month = myDate.getMonth(); //获取当前月份(0-11,0代表1月)
+                var yearMonth = "";
+                if(month == 0){
+                    year = year - 1;
+                    yearMonth = year+"_"+"12";
+                }else{
+                    yearMonth = year+"_"+month;
+                }
+
+                //控制选中当前月份的前一个月
+                var select = document.getElementById("recordTime");
+                for (var i = 0; i < select.options.length; i++){
+                    if (select.options[i].value == yearMonth){
+                        select.options[i].selected = true;
+                        break;
+                    }
+                }
+            }
+        })
+    }
+
+    function loadAllData() {
+        var yearMonth = $("#recordTime option:selected").val();
+        $.ajax({
+            type:"get",
+            data:{"yearMonth":yearMonth},
+            url:"loadAllScoreData",
+            async:false,
+            success:function (data) {
+                var thead = data.thead;
+                var str = "<tr>";
+                for(var i = 0 ; i < thead.length ; i++){
+                    if(i == 11){
+                        str = str+'<th style="font-size: 18px;color: red;">'+thead[i]+"</th>";
+                    }else{
+                        str = str+'<th style="font-size: 18px;">'+thead[i]+"</th>";
+                    }
+                }
+                str = str+"</tr>";
+                $("#dataHead").html("");
+                $("#dataHead").append(str);
+
+                var tdLength = 0;
+
+                var tbody = data.tbody;
+                $("#dataBody").html("");
+                for(var i = 0 ; i < tbody.length ; i++){
+                    var tr = tbody[i];
+                    tdLength = tr.length;
+                    var str2 = "<tr  onclick='findBussiness(this)'>";
+                    for(var j = 0 ; j < tr.length ; j++){
+                        if(j == 11){
+                            str2 = str2 + '<td style="font-size: 16px;color: red;">'+tr[j]+"</td>";
+                        }else if(j == 13){
+                            str2 = str2 + '<td style="font-size: 16px;">'+"第"+tr[j]+"名"+"</td>";
+                        }else{
+                            str2 = str2 + '<td style="font-size: 16px;">'+tr[j]+"</td>";
+                        }
+                    }
+                    str2 = str2+"</tr>";
+                    $("#dataBody").append(str2);
+                }
+                var bestBussiness = data.bestBussiness;
+                $("#dataBody").append("<tr>"
+                    +'<td colspan="'+tdLength+'" style="font-size: 16px;">'+'<img src="image/perfect.png">'+"明星事业部:&nbsp;&nbsp;"+bestBussiness+"</td>"
+                    +"</tr>");
+            }
+        })
+    }
+
+    function findBussiness(obj) {
+        var bussiness = obj.childNodes[0].innerText;
+        window.location.href="foreOneBussinessSecond?bussiness="+bussiness;
+    }
+
+    function showDataByYear() {
+        window.location.href="foreAnnualStatementSecond";
+    }
+</script>
+</body>
+</html>
+

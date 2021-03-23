@@ -16,6 +16,12 @@ public class IdentityController {
     AccountService accountService;
 
 
+    /**
+     * 判断所属部门
+     * 此处分为两类：1、人事 2、其它
+     * @param session
+     * @return
+     */
     @PostMapping("/getIdentity")
     public String getUserIdentity(HttpSession session){
         People user = (People) session.getAttribute("user");

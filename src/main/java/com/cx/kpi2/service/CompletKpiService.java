@@ -19,7 +19,6 @@ public class CompletKpiService {
 
     public List<String> getRecordTime(){
         List<CompleteKpi> completeKpiList = completKpiDAO.findAll();
-        System.out.println(completeKpiList);
         List<String> recordTime = new ArrayList<>();
         for(int i = 0 ; i < completeKpiList.size() ; i++){
             String year_month = completeKpiList.get(i).getYearMonth();
@@ -27,9 +26,9 @@ public class CompletKpiService {
                 recordTime.add(year_month);
             }
         }
-        System.out.println(recordTime);
         return recordTime;
     }
+
 
     public List<String> getRecordTimeByBussiness(String bussiness){
         List<CompleteKpi> completeKpiList = completKpiDAO.findByBussiness(bussiness);

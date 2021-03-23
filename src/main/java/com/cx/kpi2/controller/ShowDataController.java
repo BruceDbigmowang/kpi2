@@ -45,10 +45,20 @@ public class ShowDataController {
     @Autowired
     WeightService weightService;
 
+    /**
+     * 返回所有打分的时间  年_月
+     * @return
+     */
     @RequestMapping("/allBussinessGetTime")
     public List<String> getAllTime(){
         return completKpiService.getRecordTime();
     }
+
+    /**
+     * 获取某一事业部所有打分时间 年_月
+     * @param bussiness
+     * @return
+     */
     @RequestMapping("/oneBussinessGetTime")
     public List<String> getOneTime(@RequestParam("bussiness")String bussiness){
         return completKpiService.getRecordTimeByBussiness(bussiness);
@@ -68,10 +78,18 @@ public class ShowDataController {
         return deptTotalScoreService.getLastScore(yearMonth);
     }
 
+    /**
+     * 获取所有事业部评分总和
+     * 返回 List<BigDecimal>
+     */
     @RequestMapping("/getAllTotalByTime")
     public List<BigDecimal> getTotalByYearMonth(@RequestParam("yearMonth")String yearMonth){
         return deptTotalScoreService.getTotalScore(yearMonth);
     }
+
+    /**
+     * 获取评分最高的事业部，返回一个字符串
+     */
     @RequestMapping("/getTopBussiness")
     public String getTop(@RequestParam("yearMonth")String yearMonth){
         return deptTotalScoreService.getGoodBussiness(yearMonth);
@@ -88,6 +106,11 @@ public class ShowDataController {
         return deptTotalScoreService.getAllDeptByBussinessAndYearMonth(bussiness , yearMonth);
     }
 
+    /**
+     * 获取某一事业部下  所有部门的评分
+     * 若有评分 则显示评分
+     * 若无评分 则显示0
+     */
     @RequestMapping("/getOneBussinessAllDeptScore")
     public BigDecimal getOneBussinessAllData(@RequestParam("bussiness")String bussiness , @RequestParam("yearMonth")String yearMonth){
 

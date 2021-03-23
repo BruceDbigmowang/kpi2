@@ -165,10 +165,33 @@ $(function (){
             }
         })
     }
+
+    function changeYear(){
+        loadAllBussiness();
+        showAnnualData();
+        getAnnualTotal();
+        getAnnualRank();
+    }
+
+    function downloadYearly() {
+        var year = document.getElementById("recordTime").value;
+        document.location.href="downloadYearly?year="+year;
+    }
+
+    function returnLastPage(){
+        window.location.href="foreAllBussiness";
+    }
+
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
-    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange=""></select>
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="changeYear()"></select>
 </div>
+
+<div>
+    <button class="btn btn-primary" onclick="returnLastPage()">返回上一页</button>
+    <button class="btn btn-primary" style="margin-left: 1%;" onclick="downloadYearly()">导出为Excel表</button>
+</div>
+
 <h1 style="margin-left: 22%;">集团职能部门对各事业部的KPI考核年度报表</h1>
 <div style="position: relative;display: block;margin-left: 11%;">
     <div  style="float: left;display:block;position: absolute;" >

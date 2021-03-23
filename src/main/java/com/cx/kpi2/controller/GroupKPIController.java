@@ -31,6 +31,13 @@ public class GroupKPIController {
     @Autowired
     GroupRecordService groupRecordService;
 
+    /**
+     * 对部门进行打分
+     * 首先判断账号的角色
+     * 根据角色来加载不同的考核内容
+     *
+     * 此处，一个账号可能存在多个角色，但考核项目只需要打一次分，所以此处还有去重的功能
+     */
     @RequestMapping("/showGroupRegard")
     public List<GroupKPI> showAllRegard(HttpSession session){
         People user = (People)session.getAttribute("user");
@@ -84,6 +91,9 @@ public class GroupKPIController {
         return groupKPIList;
     }
 
+    /**
+     * 此处检查打分时  填写的分数是否超过最大分数
+     */
     @RequestMapping("/checkData")
     public String checkInputData(@RequestParam("kpis[]")int[] kpis , @RequestParam("scores[]")BigDecimal[] scores){
         String errorInfo = "";
@@ -100,6 +110,11 @@ public class GroupKPIController {
         return errorInfo;
     }
 
+    /**
+     * 检查完分数填写无误后，向数据库中写入数据
+     * 但此处存在一个账号拥有多个角色
+     * 而且有的考核项目，前台只评一次分数，但要以不同的角色写入多次
+     */
     @RequestMapping("/writeGroupDeptRecord")
     public void saveRecord(@RequestParam("kpis[]")int[] kpis , @RequestParam("scores[]") BigDecimal[] scores ,@RequestParam("yearMonth")String yearMonth , HttpSession session){
         People user = (People)session.getAttribute("user");
@@ -168,6 +183,11 @@ public class GroupKPIController {
         groupRecordService.save(groupRecord);
     }
 
+    /**
+     * 集团职能部门考核：
+     *
+     * 判断某个月是否完成考核
+     */
     @RequestMapping("/completGroupTest")
     public boolean completOrNot(@RequestParam("yearMonth")String yearMonth , HttpSession session){
         People user = (People)session.getAttribute("user");
@@ -176,6 +196,9 @@ public class GroupKPIController {
         return result;
     }
 
+    /**
+     * 获取所有KPI评分的时间
+     */
     @RequestMapping("getAllRecordTime")
     public List<String> allRecordTime(){
         return groupRecordService.getAllRecordTime();
@@ -198,8 +221,6 @@ public class GroupKPIController {
 
     @RequestMapping("/getGroupTestDetail")
     public List<GroupScore> getAllDetails(@RequestParam("dept")String dept ,@RequestParam("yearMonth")String yearMonth){
-        System.out.println("++++"+yearMonth);
-        System.out.println(dept+"++++");
         /**
          * 查询出某部门所有的考核明细
          */
@@ -347,7 +368,6 @@ public class GroupKPIController {
         }
 
         List<String> ranks = new ArrayList<>();
-//        System.out.println(totals[0]+"_"+totals[1]+"_"+totals[2]+"_"+totals[3]+"_"+totals[4]+"_"+totals[5]+"_"+totals[6]+"_"+totals[7]+"_"+totals[8]+"_"+totals[9]);
         for(int i = 0 ; i < newTotal.size() ; i++){
             BigDecimal total = newTotal.get(i);
             int position = 0;
@@ -358,7 +378,6 @@ public class GroupKPIController {
                 }
             }
             ranks.add("第"+position+"名");
-//            System.out.println("第"+position+"名");
         }
 
         return ranks;

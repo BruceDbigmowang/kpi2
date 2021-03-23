@@ -262,4 +262,15 @@ public class DeptTotalScoreService {
         }
         return goodBussiness;
     }
+
+    public BigDecimal findByBussinessAndDeptAndYearMonth(String bussiness , String dept , String yearMonth){
+        List<DeptTotalScore> deptTotalScoreList = deptTotalScoreDAO.getByBussinessAndDeptAndYearMonth(bussiness , dept , yearMonth);
+        BigDecimal result = new BigDecimal(0);
+        if(deptTotalScoreList == null || deptTotalScoreList.size() == 0){
+            return result;
+        }else{
+            result = result.add(deptTotalScoreList.get(0).getScore());
+            return result;
+        }
+    }
 }

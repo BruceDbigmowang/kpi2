@@ -19,8 +19,12 @@
         var myDate = new Date();
         var tYear = myDate.getFullYear();
         var tMonth = myDate.getMonth();
-        var m = tMonth + 1;
-        var yearMonth = tYear +'_'+ m;
+        var yearMonth = "";
+        if(tMonth == 0){
+            yearMonth = tYear-1 +'_'+12;
+        }else{
+            yearMonth = tYear +'_'+ tMonth;
+        }
 
         $.ajax({
             type:"post",
@@ -79,7 +83,7 @@
             success:function(data){
                 $("#allBussiness").html("");
                 for(var i = 0 ; i < data.length ; i++){
-                    $("#allBussiness").append("<tr>"+"<td style=\"width: 100px;font-size: 18px\">"+data[i].bussiness+"</td>"+"</tr>");
+                    $("#allBussiness").append("<tr>"+"<td style=\"width: 130px;font-size: 18px;height: 30px;\">"+data[i].bussiness+"</td>"+"</tr>");
                 }
             }
         })
@@ -96,7 +100,7 @@
                     var bussiness = data[i];
                     var program = "";
                     for(var j = 0 ; j < bussiness.length ; j++){
-                        program = program+'<td style="width: 100px;font-size: 18px;">'+bussiness[j]+"</td>";
+                        program = program+'<td style="width: 100px;font-size: 18px;height: 30px;">'+bussiness[j]+"</td>";
                     }
                     $("#BussinessAndDeptScore").append("<tr>"+program+"</tr>");
                 }
@@ -112,7 +116,7 @@
             success:function(data){
                 $("#bussinessTotal").html("");
                 for(var i = 0 ; i < data.length ; i++){
-                    $("#bussinessTotal").append("<tr>"+'<td style="width:100px;font-size: 18px;">'+data[i]+"</td>"+"</tr>");
+                    $("#bussinessTotal").append("<tr>"+'<td style="width:100px;font-size: 18px;height: 30px;">'+data[i]+"</td>"+"</tr>");
                 }
             }
 
@@ -124,11 +128,12 @@
             url:"getTopBussiness",
             async:false,
             success:function(data){
-                $("#gooBussiness").html("");
+                $("#goodBussiness").html("");
                 $("#goodBussiness").append("<tr>"+'<td style="width: 1300px;font-size: 18px">'+'<img src="image/perfect.png">'+"明星事业部："+data+"</td>"+"</tr>");
             }
         })
 
+        getRanks();
     }
 
     function TabClick(){
@@ -166,10 +171,15 @@
             success:function (data) {
                 $("#ranks").html("");
                 for(var i = 0 ; i < data.length ; i++){
-                    $("#ranks").append("<tr>"+'<td style="width: 100px;font-size: 18px;">'+data[i]+"</td>"+"</tr>");
+                    $("#ranks").append("<tr>"+'<td style="width: 100px;font-size: 18px;height: 30px;">'+data[i]+"</td>"+"</tr>");
                 }
             }
         })
+    }
+
+    function downloadTable() {
+        var yearMonth = document.getElementById("recordTime").value;
+        document.location.href="downloadMonthly?yearMonth="+yearMonth;
     }
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
@@ -177,32 +187,33 @@
 </div>
 <div>
     <button class="btn btn-primary" onclick="toAnnualStatement()">查看年度报表</button>
+    <button class="btn btn-primary" style="margin-left: 1%;" onclick="downloadTable()">导出为Excel表</button>
 </div>
 <h1 style="margin-left: 20%;">集团职能部门对各事业部的KPI考核月度报表</h1>
 <div id="allInfo" style="display: block;position: relative;margin-left:2%;margin-top:3%;">
     <div style="display: block;position: absolute;float: left">
         <table  border="1px" style="background-color: #CCCCDD" onclick="TabClick()">
             <thead>
-                    <td style="width: 100px;font-size: 18px">事业部</td>
+                    <td style="width: 100px;font-size: 18px;height:30px;">事业部</td>
             </thead>
             <tbody id="allBussiness"></tbody>
         </table>
     </div>
-    <div style="display: block;position: absolute;float: left;margin-left: 100px;">
+    <div style="display: block;position: absolute;float: left;margin-left: 130px;">
         <table id="allDept" border="1px" style="background-color: #CCCCDD">
             <tr>
-                <td style="width: 100px;font-size: 18px;" v-for="dept in depts">集团{{dept}}</td>
+                <td style="width: 100px;font-size: 18px;height:30px;" v-for="dept in depts">集团{{dept}}</td>
             </tr>
         </table>
     </div>
-    <div style="display: block;position: absolute;float: left;margin-left: 100px;margin-top: 26px">
+    <div style="display: block;position: absolute;float: left;margin-left: 130px;margin-top: 30px">
         <table id="BussinessAndDeptScore" border="1px" style="background-color: #CCCCDD"></table>
     </div>
-    <div style="display: block;position: absolute;float: left;margin-left: 1100px;">
+    <div style="display: block;position: absolute;float: left;margin-left: 1130px;">
         <table border="1px" style="background-color: #CCCCDD">
             <thead>
                 <tr>
-                    <td style="width: 100px;font-size: 18px;">合计</td>
+                    <td style="width: 100px;font-size: 18px;height: 30px;">合计</td>
                 </tr>
             </thead>
             <tbody id="bussinessTotal"></tbody>
@@ -212,13 +223,13 @@
         <table border="1px" style="background-color: #CCCCDD">
             <thead>
             <tr>
-                <td style="width: 100px;font-size: 18px;">排名</td>
+                <td style="width: 100px;font-size: 18px;height: 30px;">排名</td>
             </tr>
             </thead>
             <tbody id="ranks"></tbody>
         </table>
     </div>
-    <div style="display: block;position:absolute;float:left;margin-top: 415px">
+    <div style="display: block;position:absolute;float:left;margin-top: 450px">
         <table id="goodBussiness" border="1px" style="background-color: #CCCCDD"></table>
     </div>
 </div>

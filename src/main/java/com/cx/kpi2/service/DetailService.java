@@ -8,8 +8,10 @@ import com.cx.kpi2.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @Service
 public class DetailService {
@@ -33,14 +35,29 @@ public class DetailService {
                         Record record = recordList.get(j);
                         List<Hrkpi> hrkpiList = hrkpiDAO.findById(record.getKpiNo());
                         if(hrkpiList.size() != 0){
-                            String kpiDetail = hrkpiList.get(0).getTestDetail();
+
                             String testLevel = hrkpiList.get(0).getTestLevel();
-                            Detail detail = new Detail();
-                            detail.setDept("集团"+dept);
-                            detail.setDetail(kpiDetail);
-                            detail.setScore(record.getScore());
-                            detail.setTestLevel(testLevel);
-                            detailList.add(detail);
+                            if(testLevel.equals("S")){
+                                BigDecimal weight = hrkpiList.get(0).getWeight().multiply(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN);
+                                String kpiDetail = hrkpiList.get(0).getTestDetail()+"(重大事项)";
+                                Detail detail = new Detail();
+                                detail.setDept("集团"+dept);
+                                detail.setDetail(kpiDetail);
+                                detail.setScore(record.getScore());
+                                detail.setTestLevel(testLevel);
+                                detailList.add(detail);
+                            }else{
+                                BigDecimal weight = hrkpiList.get(0).getWeight().multiply(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN);
+                                String kpiDetail = hrkpiList.get(0).getTestDetail()+"(分值:"+hrkpiList.get(0).getScoreMax()+",权重:"+weight+"%)";
+                                Detail detail = new Detail();
+                                detail.setDept("集团"+dept);
+                                detail.setDetail(kpiDetail);
+                                detail.setScore(record.getScore());
+                                detail.setTestLevel(testLevel);
+                                detailList.add(detail);
+                            }
+
+
 
                         }
 
@@ -51,14 +68,29 @@ public class DetailService {
                     Record record = recordList.get(j);
                     List<Otherkpi> otherkpiList = otherkpiDAO.findById(record.getKpiNo());
                     if(otherkpiList != null){
-                        String kpiDetail = otherkpiList.get(0).getTestDetail();
+
                         String testLevel = otherkpiList.get(0).getTestLevel();
-                        Detail detail = new Detail();
-                        detail.setDept("集团"+dept);
-                        detail.setDetail(kpiDetail);
-                        detail.setScore(record.getScore());
-                        detail.setTestLevel(testLevel);
-                        detailList.add(detail);
+                        if(testLevel.equals("S")){
+                            BigDecimal weight = otherkpiList.get(0).getWeight().multiply(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN);
+                            String kpiDetail = otherkpiList.get(0).getTestDetail()+"(重大事项)";;
+                            Detail detail = new Detail();
+                            detail.setDept("集团"+dept);
+                            detail.setDetail(kpiDetail);
+                            detail.setScore(record.getScore());
+                            detail.setTestLevel(testLevel);
+                            detailList.add(detail);
+                        }else{
+                            BigDecimal weight = otherkpiList.get(0).getWeight().multiply(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_DOWN);
+                            String kpiDetail = otherkpiList.get(0).getTestDetail()+"(分值:"+otherkpiList.get(0).getScoreMax()+",权重:"+weight+"%)";;
+                            Detail detail = new Detail();
+                            detail.setDept("集团"+dept);
+                            detail.setDetail(kpiDetail);
+                            detail.setScore(record.getScore());
+                            detail.setTestLevel(testLevel);
+                            detailList.add(detail);
+                        }
+
+
                     }
 
                 }

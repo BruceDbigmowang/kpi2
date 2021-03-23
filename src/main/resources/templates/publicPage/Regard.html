@@ -26,37 +26,10 @@
                     }else{
                         $("#bussiness").append("<option>"+data[i].bussiness+"</option>");
                     }
-                    // $("#bussiness").append("<option>"+data[i].bussiness+"</option>");
                 }
             }
         })
-        // var data4Vue = {
-        //     uri:'getFirstLevel',
-        //     // firstLevels:[],
-        //     bussinesses:[]
-        // }
-        // var vue = new Vue({
-        //     el:'#workingArea',
-        //     data:data4Vue,
-        //     mounted:function(){
-        //         // this.load();
-        //         this.getBussiness();
-        //     },
-        //     methods:{
-                // load:function(){
-                //     var url = this.uri;
-                //     axios.post(url).then(function (response) {
-                //         vue.firstLevels = response.data;
-                //     })
-                // },
-            //     getBussiness:function(){
-            //         var url = 'getAllBussiness';
-            //         axios.post(url).then(function (response) {
-            //             vue.bussinesses = response.data;
-            //         })
-            //     }
-            // }
-        // })
+
 
         $.ajax({
             type:"post",
@@ -76,25 +49,52 @@
     })
     //对其它部门进行KPI考核  首先获取一级分类
     function firstLevel(){
-        $.ajax({
-            type:"post",
-            url:"getFirstLevel",
-            async:false,
-            success:function(data){
-                $("#content").html("");
-                // var firstLevel = JSON.parse(data);
-                for(var i = 0 ; i < data.length ; i ++){
-                    $("#content").append(
-                        "<h2>"+data[i].testType+"</h2>"+"<br>"
-                    );
-                    getSecondLevel(data[i].id);
+        var bussiness = $("#bussiness option:selected").val();
+        if(bussiness == "惠州春兴"){
+            $.ajax({
+                type:"post",
+                url:"getHZFirstLevel",
+                async:false,
+                success:function(data){
+                    $("#content").html("");
+                    // var firstLevel = JSON.parse(data);
+                    for(var i = 0 ; i < data.length ; i ++){
+                        $("#content").append(
+                            "<h2>"+data[i].testType+"</h2>"+"<br>"
+                        );
+                        getSecondLevel(data[i].id);
 
+                    }
+                    $("#content").append('<table style="border: 0px;margin-top: 20px;">'+"<tr>"+'<td style="width: 50px;font-size: 16px;color: red;">'+"合计："+"</td>"+'<td id="total" style="width: 100px;font-size: 16px;color: red;">'+0+"</td>"+"</tr>"+"</table>");
+                    $("#content").append('<button id="btn" class="btn btn-primary" onclick="getRecord()" style="margin-left: 45%;">'+"提交"+"</button>");
+                    // var a = $("#content").children("div").length;
+                    // alert(a);
                 }
-                $("#content").append('<button id="btn" class="btn btn-primary" onclick="getRecord()" style="margin-left: 45%;">'+"提交"+"</button>");
-                // var a = $("#content").children("div").length;
-                // alert(a);
-            }
-        })
+            })
+        }else{
+            $.ajax({
+                type:"post",
+                url:"getFirstLevel",
+                async:false,
+                success:function(data){
+                    $("#content").html("");
+                    // var firstLevel = JSON.parse(data);
+                    for(var i = 0 ; i < data.length ; i ++){
+                        $("#content").append(
+                            "<h2>"+data[i].testType+"</h2>"+"<br>"
+                        );
+                        getSecondLevel(data[i].id);
+
+                    }
+                    $("#content").append('<table style="border: 0px;margin-top: 20px;">'+"<tr>"+'<td style="width: 50px;font-size: 16px;color: red;">'+"合计："+"</td>"+'<td id="total" style="width: 100px;font-size: 16px;color: red;">'+0+"</td>"+"</tr>"+"</table>");
+                    $("#content").append('<button id="btn" class="btn btn-primary" onclick="getRecord()" style="margin-left: 45%;">'+"提交"+"</button>");
+                    // var a = $("#content").children("div").length;
+                    // alert(a);
+                }
+            })
+        }
+
+
     }
     //对其它部门进行考核，获取二级分类
     function getSecondLevel(first) {
@@ -132,9 +132,9 @@
                     var no = i+1;
                     // $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"(分值："+data[i].scoreMax+"分；权重："+data[i].weight*100+"%"+")"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+'<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;">'+"</div>");
                     if(data[i].testLevel == "S"){
-                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"<span>"+"(重要事项：若发生值为0，未发生值为1)"+"</span>"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;" value="1">'+"</div>");
+                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"<span>"+"(重要事项：若发生值为0，未发生值为1)"+"</span>"+'<input name="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input name="Lvs" type="text" style="width:80px;height:30px;font-size: 18px;" value="1" onblur="getTotal()">'+"</div>");
                     }else{
-                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"(分值："+data[i].scoreMax+"分；权重："+parseInt(data[i].weight*100)+"%"+")"+'<input id="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input id="score" type="text" style="width:80px;height:30px;font-size: 18px;">'+"</div>");
+                        $("#content").append('<div style="font-size: 18px;">'+"("+no+")"+data[i].testDetail+"(分值："+data[i].scoreMax+"分；权重："+parseInt(data[i].weight*100)+"%"+")"+'<input name="kpi" type="hidden" value="'+data[i].id+'">'+"      "+'评分：<input name="score" type="text" style="width:80px;height:30px;font-size: 18px;" onblur="getTotal()">'+"</div>");
 
                     }
                 }
@@ -279,6 +279,23 @@
 
     }
 
+    function getTotal() {
+        var scores = document.getElementsByName("score");
+        var total = 0;
+        for(var i = 0 ; i < scores.length ; i++){
+            if(scores[i].value != ""){
+                total = total + Number(scores[i].value);
+            }
+        }
+        var sss = document.getElementsByName("Lvs");
+        for(var i = 0 ; i < sss.length ; i++){
+            if(sss[i].value != "1"){
+                total = 0;
+            }
+        }
+        $("#total").html("");
+        $("#total").append(total);
+    }
 </script>
 <style>
     span{

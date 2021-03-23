@@ -80,8 +80,8 @@ function getGroupKPI(){
                     $("#allKPI").append("<tr>"+'<td style="width:500px;height:60px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
                     height+=60;
                 }else if(level == "A"){
-                    $("#allKPI").append("<tr>"+'<td style="width:500px;height:330px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
-                    height+=330;
+                    $("#allKPI").append("<tr>"+'<td style="width:500px;height:300px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
+                    height+=300;
                 }else if(level == "B"){
                     $("#allKPI").append("<tr>"+'<td style="width:500px;height:450px;font-size: 18px">'+data[i].content+"</td>"+"</tr>");
                     height+=450;
@@ -112,7 +112,7 @@ function getAllRecordTime() {
         async:false,
         success:function(data){
             for(var i = 0 ; i < data.length ; i++){
-                if(data[i] == tYear){
+                if(data[i] == yearMonth){
                     $("#recordTime").append('<option selected value="'+data[i]+'">'+data[i]+"</option>");
                 }else{
                     $("#recordTime").append('<option value="'+data[i]+'">'+data[i]+"</option>");
@@ -143,7 +143,7 @@ function clickTab(){
 
 </script>
 <div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
-    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllTotalScore()"></select>
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="getDetail()"></select>
 </div>
 
 <div style="position: relative;margin-left:9%;margin-top: 5%;">

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>所有事业部年度报表</title>
+</head>
+<body style="background-color: #77cbd8">
+
+<div style="margin-top: 1%;margin-left: 80%;font-size: 18px;">
+    选择时间:<select id="recordTime" class="btn dropdown-toggle" style="width:150px;height:30px;" onchange="loadAllData()">
+    <option value="2021">2021</option>
+    <option value="2022">2022</option>
+    <option value="2023">2023</option>
+    <option value="2014">2014</option>
+</select>
+</div>
+
+<h1 style="margin-left: 22%;">集团职能部门对各事业部的KPI考核年度报表</h1>
+<div>
+    <table class="table table-striped table-bordered table-hover  table-condensed" style="font-size: 18px;background-color: white;">
+        <thead>
+        <tr>
+            <th colspan="2">时间</th>
+            <th>1月</th>
+            <th>2月</th>
+            <th>3月</th>
+            <th>4月</th>
+            <th>5月</th>
+            <th>6月</th>
+            <th>7月</th>
+            <th>8月</th>
+            <th>9月</th>
+            <th>10月</th>
+            <th>11月</th>
+            <th>12月</th>
+            <th>年度总得分</th>
+            <th>排名</th>
+        </tr>
+        </thead>
+        <tbody id="mainData"></tbody>
+    </table>
+</div>
+<script>
+    $(function () {
+        chooseYear();
+        loadAllData();
+    });
+
+    function chooseYear() {
+        var myDate = new Date();
+        var year = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+        //控制选中当前月份的前一个月
+        var select = document.getElementById("recordTime");
+        for (var i = 0; i < select.options.length; i++){
+            if (select.options[i].value == year){
+                select.options[i].selected = true;
+                break;
+            }
+        }
+
+    }
+
+    function loadAllData() {
+        var year = $("#recordTime option:selected").val();
+        $.ajax({
+            type:"get",
+            data:{"year":year},
+            url:"getDataByYear",
+            async:false,
+            success:function (data) {
+                var rowLen = data.obl;
+                var result = data.result;
+                var ranges = data.ranges;
+                $("#mainData").html("");
+                for(var i = 0 ; i < result.length ; i++){
+                    if(i % rowLen == 0){
+                        var num = i / rowLen;
+                        $("#mainData").append("<tr>"
+                            +'<td style="font-size: 18px;vertical-align: middle;" rowspan="'+rowLen+'">'+result[i][0]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][1]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][2]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][3]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][4]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][5]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][6]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][7]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][8]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][9]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][10]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][11]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][12]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][13]+"</td>"
+                            +'<td style="font-size: 18px;vertical-align: middle;" rowspan="'+rowLen+'">'+result[i][14]+"</td>"
+                            +'<td style="font-size: 18px;vertical-align: middle;" rowspan="'+rowLen+'">'+ranges[num]+"</td>"
+                            +"</tr>");
+                    }else{
+                        $("#mainData").append("<tr>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][1]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][2]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][3]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][4]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][5]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][6]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][7]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][8]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][9]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][10]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][11]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][12]+"</td>"
+                            +"<td style=\"font-size: 18px;\">"+result[i][13]+"</td>"
+                            +"</tr>");
+                    }
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

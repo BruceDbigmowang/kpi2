@@ -12,6 +12,11 @@ public class DeptController {
     @Autowired
     DeptService deptService;
 
+    /**
+     * KPI考核结果查询中，表格是拼接显示出来的
+     * 用于显示所有部门
+     * @return
+     */
     @RequestMapping("/getAllDept")
     public List<String> getDepts(){
         return deptService.getAllDept();

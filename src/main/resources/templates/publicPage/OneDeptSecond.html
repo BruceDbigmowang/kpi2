@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <script src="js/vue/2.5.16/vue.min.js"></script>
+    <script src="js/axios/0.17.1/axios.min.js"></script>
+    <script src="js/moment/2.22.2/moment.js"></script>
+    <link href="css/fore/style.css" rel="stylesheet">
+    <title>事业部下具体某部门KPI考核得分</title>
+</head>
+<body style="background-color: #77cbd8">
+
+<img src="image/logo.png">
+<div style="font-size: 18px;text-align: right;">
+    选择时间:<select id="recordTime" class="form-control" style="width:200px;height:40px;font-size:18px;display: inline;" onchange="loadAllData()"></select>
+</div>
+<div id="content" style="width: 90%;margin:0px auto;">
+    <table class="table table-striped table-bordered table-hover  table-condensed" style="font-size: 18px;background-color: white;margin-top: 2%;">
+        <thead>
+        <tr>
+            <th style="width: 4%;">序号</th>
+            <th style="width: 13%;">考核内容</th>
+            <th>考核明细</th>
+            <th style="width: 10%;">得分</th>
+        </tr>
+        </thead>
+        <tbody id="allDetails"></tbody>
+    </table>
+</div>
+
+<script>
+    $(function () {
+        loadRecordTime();
+        loadAllData();
+    });
+
+    //获取URL中参数的值
+    function getQueryVariable(variable){
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+
+    function loadRecordTime() {
+        $.ajax({
+            type:"get",
+            url:"loadRecordTime",
+            async:false,
+            success:function (data) {
+                $("#recordTime").html("");
+                for(var i = 0 ; i < data.length ; i++){
+                    $("#recordTime").append('<option value="'+data[i]+'">'+data[i]+"</option>");
+                }
+                var myDate = new Date();
+                var year = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+                var month = myDate.getMonth(); //获取当前月份(0-11,0代表1月)
+                var yearMonth = "";
+                if(month == 0){
+                    year = year - 1;
+                    yearMonth = year+"_"+"12";
+                }else{
+                    yearMonth = year+"_"+month;
+                }
+
+                //控制选中当前月份的前一个月
+                var select = document.getElementById("recordTime");
+                for (var i = 0; i < select.options.length; i++){
+                    if (select.options[i].value == yearMonth){
+                        select.options[i].selected = true;
+                        break;
+                    }
+                }
+            }
+        })
+    }
+
+    function loadAllData() {
+        var bussiness = decodeURI(getQueryVariable("bussiness"));
+        var dept = decodeURI(getQueryVariable("dept"));
+        var yearMonth = $("#recordTime option:selected").val();
+        var data = {"bussiness":bussiness , "dept":dept , "yearMonth":yearMonth};
+        $.ajax({
+            type:"get",
+            data:data,
+            url:"getCheckDetailResult",
+            async:false,
+            success:function (data) {
+                $("#allDetails").html("");
+                var details = data.details;
+                var results = data.results;
+                for(var i = 0 ; i < details.length ; i++){
+                    var no = i + 1;
+                    $("#allDetails").append("<tr>"
+                        +"<td style=\"font-size: 18px;\">"+ no +"</td>"
+                        +"<td style=\"font-size: 18px;\">"+ details[i].title+"</td>"
+                        +"<td style=\"font-size: 18px;\">"+details[i].mainContent+"<br>"+details[i].details+"</td>"
+                        +"<td style=\"font-size: 18px;\">"+'<input name="kpiID" type="hidden" value="'+details[i].id+'">'+results[i]+"</td>"
+                        +"</tr>");
+                }
+            }
+        })
+
+    }
+</script>
+
+</body>
+</html>

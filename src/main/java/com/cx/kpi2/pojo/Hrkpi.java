@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "HR_KPI")
+@Table(name = "HR_KPI2")
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
 public class Hrkpi {
     @Id

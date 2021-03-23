@@ -60,9 +60,27 @@ public class KpiController {
     public List<TestCategory> getDataByDept(HttpSession session){
         People user = (People)session.getAttribute("user");
         String dept = accountService.getUserByAccount(user.getAccount()).getDept();
-        System.out.println(dept);
         return testCategoryService.getAllByDept(dept);
     }
+
+    /**
+     * 根据部门来加载考核内容
+     * 特例：供应链部门 考核内容
+     * 惠州春兴的考核内容  与 其它事业部的考核内容不一致
+     * @param session
+     * @return
+     */
+    @RequestMapping("/getHZFirstLevel")
+    public List<TestCategory> getHZDataByDept(HttpSession session){
+        People user = (People)session.getAttribute("user");
+        String dept = accountService.getUserByAccount(user.getAccount()).getDept();
+        if(dept.equals("供应链")){
+            dept = dept+"H";
+        }
+        return testCategoryService.getAllByDept(dept);
+    }
+
+
 
     @RequestMapping("/otherFirstLevel2")
     public List<TestCategory> getDataByDept2(@RequestParam("dept")String dept){
@@ -109,6 +127,11 @@ public class KpiController {
         return otherkpiService.getKpiByContent(first, second);
     }
 
+    /**
+     * 记录下对某个事业部的打分情况
+     * KPI考核的ID 与 分数 一一对应
+     * 再将部门事业部记录下来
+     */
     @PostMapping("/writeRecord")
     public String wirteOneRecord(@RequestParam(value = "kpiNo[]")int[] kpiNos , @RequestParam(value = "score[]")int[] scores , @RequestParam("bussiness")String bussiness , HttpSession session){
         People user = (People) session.getAttribute("user");
@@ -346,6 +369,10 @@ public class KpiController {
     return "KPI考核记录成功";
     }
 
+    /**
+     * 检查评分，每一项考核均有具体的最大分数
+     * 填写的评分不得超过最大分数
+     */
     @RequestMapping("/checkSubmit")
     public String checkData(@RequestParam(value = "kpiNo[]")int[] kpiNos , @RequestParam(value = "score[]")int[] scores , @RequestParam("bussiness")String bussiness , HttpSession session){
         People user = (People) session.getAttribute("user");
